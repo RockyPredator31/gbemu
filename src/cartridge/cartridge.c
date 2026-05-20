@@ -1,23 +1,21 @@
 #include "cartridge.h"
+#include "../memory/memory.h"
 #include "../gb.h"
 #include <string.h>
 #include <stdio.h>
 
-void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size)
+void cartridge_init(Cartridge* cart, Memory* memory)
 {
-    cart->rom = rom;
-    cart->rom_size = rom_size;
     cart->rom_bank = 1;
     cart->ram_enabled = false;
     cart->ram_bank = 0;
-    cart->header_checksum = cart->rom[0x014D];
 
     //Titel auslesen
-    memcpy(cart->title, &cart->rom[0x0134], 16);
+    memcpy(cart->title, &memory->rom[0x0134], 16);
     cart->title[16] = '\0';
 
     // MBC Typ auslesen (Adresse 0x0147)
-    uint8_t mbc_byte = cart->rom[0x0147];
+    uint8_t mbc_byte = memory->rom[0x0147];
 
     // Vereinfacht. Nicht alle mbc Typen.
     switch (mbc_byte) {
@@ -35,29 +33,22 @@ void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size)
 
     if(cart->mbc_type == MBC2)
     {
-        cart->eram_size = 512;
+        memory->eram_size = 512;
     }else
     {
-        uint8_t ram_code = cart->rom[0x0149];
+        uint8_t ram_code = memory->rom[0x0149];
 
         switch(ram_code)
         {
-            case 0x00: cart->eram_size = 0;             break;
-            case 0x02: cart->eram_size = 8 * 1024;      break;
-            case 0x03: cart->eram_size = 32 * 1024;     break;
-            case 0x04: cart->eram_size = 128 * 1024;    break;
-            case 0x05: cart->eram_size = 64 * 1024;     break;
-            default: cart->eram_size = 0;
+            case 0x00: memory->eram_size = 0;             break;
+            case 0x02: memory->eram_size = 8 * 1024;      break;
+            case 0x03: memory->eram_size = 32 * 1024;     break;
+            case 0x04: memory->eram_size = 128 * 1024;    break;
+            case 0x05: memory->eram_size = 64 * 1024;     break;
+            default: memory->eram_size = 0;
         }
     }
 
-
-    uint8_t checksum = 0;
-    for (uint16_t address = 0x0134; address <= 0x014C; address++) {
-        checksum = checksum - cart->rom[address] - 1;
-    }
-
-    printf("Cartridge: %s | MBC: %d | ROM: %zu KB | Header Checksum: %04X | Header computed Checksum: %04X\n", 
-    cart->title, cart->mbc_type, cart->rom_size/1024, cart->header_checksum, checksum);
+    memory->eram = (uint8_t*)malloc(memory->eram_size);
 
 }

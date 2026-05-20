@@ -15,16 +15,6 @@ typedef enum {
 
 typedef struct 
 {
-    //ROM
-    uint8_t* rom;
-    size_t   rom_size;
-
-    // External RAM
-    uint8_t* eram;
-    // eram ist hier die verwendbare Ram größe. Bei MBC2 ist es im ROM als 0 nagegeben, es sind aber 512 bytes vorhanden, aber als 0 angegeben. Liegt daran wie die hardware gebaut wurde, ist hier aber egal.
-    // deswegen wird in dem fall MBC2 immer 512 bytes eram_size sein, egal was in rom[0x0149] steht.
-    size_t   eram_size;     // 0 = kein RAM vorhanden
-
     // Bank Switching
     uint8_t rom_bank;
     uint8_t ram_bank;
@@ -40,11 +30,11 @@ typedef struct
     // Cartridge Titel
     char     title[17];
 
-    // Header checksum
-    uint8_t header_checksum;
+    uint8_t  rom_banks;          // Anzahl ROM-Banken (z.B. 64 = 1MB)
+    uint8_t  ram_banks;          // Anzahl RAM-Banken
 
 } Cartridge;
 
-void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size);
+void cartridge_init(Cartridge* cart, Memory* memory);
 
 #endif

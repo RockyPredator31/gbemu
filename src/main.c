@@ -3,10 +3,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "cartridge/cartridge.h"
+#include "memory/memory.h"
 
 int main(int argc, char *argv[])
 {
     Cartridge cart = {0};
+    Memory memory = {0};
 
     FILE* f = fopen("roms/tetris.gb", "rb");
     if (!f) {
@@ -22,8 +24,10 @@ int main(int argc, char *argv[])
     fread(rom, 1, rom_size, f);
     fclose(f);
 
-    cartridge_init(&cart, rom, rom_size);
-    
-    free(cart.rom);
+    memory_init(&memory, rom, rom_size);
+    cartridge_init(&cart, &memory);
+
+
+    free(memory.rom);
     return 0;
 }
