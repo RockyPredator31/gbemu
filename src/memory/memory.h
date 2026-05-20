@@ -25,4 +25,6 @@ typedef struct {
 
 void memory_init(Memory* memory, uint8_t* rom, size_t rom_size);
 
+void memory_allocate(Memory* memory, size_t eram_size);
+
 #endif

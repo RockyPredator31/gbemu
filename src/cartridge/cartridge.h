@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "../memory/memory.h"
 
 typedef enum {
     MBC0 = 0,      // No MBC (32K ROM only)

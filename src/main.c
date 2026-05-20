@@ -26,8 +26,11 @@ int main(int argc, char *argv[])
 
     memory_init(&memory, rom, rom_size);
     cartridge_init(&cart, &memory);
+    memory_allocate(&memory, memory.eram_size);
 
+    printf("Cartridge: %s | MBC: %d | ROM: %zu KB | ERAM: %zu KB", cart.title, cart.mbc_type, memory.rom_size / 1024, memory.eram_size / 1024);
 
     free(memory.rom);
+    free(memory.eram);
     return 0;
 }

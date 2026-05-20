@@ -1,5 +1,4 @@
 #include "cartridge.h"
-#include "../memory/memory.h"
 #include "../gb.h"
 #include <string.h>
 #include <stdio.h>
@@ -48,7 +47,5 @@ void cartridge_init(Cartridge* cart, Memory* memory)
             default: memory->eram_size = 0;
         }
     }
-
-    memory->eram = (uint8_t*)malloc(memory->eram_size);
 
 }
