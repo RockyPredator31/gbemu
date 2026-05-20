@@ -1,0 +1,9 @@
+*.exe
+*.o
+*.obj
+Debug/
+Release/
+build/
+roms/*.gb
+roms/*.gbc
+__pycache__/
