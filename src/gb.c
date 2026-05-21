@@ -9,16 +9,9 @@ void gb_init(GameBoy* gb, uint8_t* rom, size_t rom_size)
 
 uint8_t memory_read(GameBoy* gb, uint16_t addr)
 {
-    if(addr >= 0x0000 && addr <= 0x3FFF)
+    if(addr <= 0x7FFF)
     {
-        return gb->cartridge.rom[addr % gb->cartridge.rom_size];
-    }
-    if(addr >= 0x4000 && addr <= 0x7FFF)
-    {
-        if(gb->cartridge.rom_size > 0x3FFF)
-        {
-            return gb->cartridge.rom[addr % gb->cartridge.rom_size];
-        }
+        return gb->cartridge.read(gb, addr);
     }
     if(addr >= 0x8000 && addr <= 0x9FFF)
     {

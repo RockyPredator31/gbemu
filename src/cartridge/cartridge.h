@@ -35,6 +35,7 @@ typedef struct
 
     // MBC Status
     uint8_t mbc_type;        // z.B. 0x01 = MBC1, 0x03 = MBC1+RAM+Battery usw.
+    uint8_t banking_mode;    // wichtig für MBC1
 
     bool     ram_enabled;        // RAM Zugriff freigeschaltet? (wichtig!)
     bool     has_battery;        // Für Save-Funktion später
