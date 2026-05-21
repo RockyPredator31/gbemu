@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     fread(rom, 1, rom_size, f);
     fclose(f);
 
-    cartridge_init(&cart, &rom, rom_size);
+    cartridge_init(&cart, rom, rom_size);
 
     printf("Cartridge: %s | MBC: %d | ROM: %zu KB | ERAM: %zu KB", cart.title, cart.mbc_type, cart.rom_size / 1024, cart.eram_size / 1024);
 
