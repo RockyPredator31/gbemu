@@ -1,5 +1,10 @@
 #include "gb.h"
 
+void gb_init(GameBoy* gb, uint8_t* rom, size_t rom_size)
+{
+    cartridge_init(&gb->cartridge, rom, rom_size);
+}
+
 
 uint8_t memory_read(GameBoy* gb, uint16_t addr)
 {
