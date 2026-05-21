@@ -17,9 +17,18 @@ typedef enum
 
 typedef struct 
 {
+    uint8_t* rom;
+    size_t   rom_size;      
+
     // Bank Switching
     uint8_t rom_bank;
     uint8_t ram_bank;
+
+    uint8_t  rom_banks;          // Anzahl ROM-Banken (z.B. 64 = 1MB)
+    uint8_t  ram_banks;          // Anzahl RAM-Banken
+
+    uint8_t* eram;
+    size_t eram_size;
 
     // MBC Status
     uint8_t mbc_type;        // z.B. 0x01 = MBC1, 0x03 = MBC1+RAM+Battery usw.
@@ -32,11 +41,8 @@ typedef struct
     // Cartridge Titel
     char     title[17];
 
-    uint8_t  rom_banks;          // Anzahl ROM-Banken (z.B. 64 = 1MB)
-    uint8_t  ram_banks;          // Anzahl RAM-Banken
-
 } Cartridge;
 
-void cartridge_init(Cartridge* cart, Memory* memory);
+void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size);
 
 #endif

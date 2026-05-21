@@ -24,13 +24,11 @@ int main(int argc, char *argv[])
     fread(rom, 1, rom_size, f);
     fclose(f);
 
-    memory_init(&memory, rom, rom_size);
-    cartridge_init(&cart, &memory);
-    memory_allocate(&memory, memory.eram_size);
+    cartridge_init(&cart, &rom, rom_size);
 
-    printf("Cartridge: %s | MBC: %d | ROM: %zu KB | ERAM: %zu KB", cart.title, cart.mbc_type, memory.rom_size / 1024, memory.eram_size / 1024);
+    printf("Cartridge: %s | MBC: %d | ROM: %zu KB | ERAM: %zu KB", cart.title, cart.mbc_type, cart.rom_size / 1024, cart.eram_size / 1024);
 
-    free(memory.rom);
-    free(memory.eram);
+    free(cart.rom);
+    free(cart.eram);
     return 0;
 }
