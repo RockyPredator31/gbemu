@@ -98,6 +98,8 @@ void mbc0_write(Cartridge* cart, uint16_t addr, uint8_t value)
     (void)value;
 }
 
+// TODO man kann rom_bank zusätzlich mit der tatsächlichen Anzahl an ROM-Bänken (rom_banks - 1) maskieren, um Überläufe zu verhindern
+
 void mbc1_write(Cartridge* cart, uint16_t addr, uint8_t value)
 {
      if (addr >= 0x0000 && addr <= 0x1FFF)           // RAM Enable
