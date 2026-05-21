@@ -1,7 +1,7 @@
 #include "gb.h"
 
 
-uint8_t read(GameBoy* gb, uint16_t addr)
+uint8_t memory_read(GameBoy* gb, uint16_t addr)
 {
     if(addr >= 0x0000 && addr <= 0x3FFF)
     {

@@ -29,8 +29,8 @@ typedef struct
 
 } GameBoy;
 
-uint8_t read(GameBoy* gb, uint16_t addr);
+uint8_t memory_read(GameBoy* gb, uint16_t addr);
 
-void write(GameBoy* gb, uint16_t addr, uint8_t write);
+void memory_write(GameBoy* gb, uint16_t addr, uint8_t write);
 
 #endif
