@@ -69,19 +69,19 @@ void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size)
             break;
         case MBC1:  
             cart->write = mbc1_write;  
-            cart->read = mbc0_read;
+            cart->read = mbc1_read;
             break;
         case MBC2:  
             cart->write = mbc2_write;  
-            cart->read = mbc0_read;
+            cart->read = mbc2_read;
             break;
         case MBC3:  
             cart->write = mbc3_write;  
-            cart->read = mbc0_read;
+            cart->read = mbc3_read;
             break;
         case MBC5:  
             cart->write = mbc5_write;  
-            cart->read = mbc0_read;
+            cart->read = mbc5_read;
             break;
         default:    
             cart->write = mbc0_write;  
