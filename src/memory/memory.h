@@ -15,6 +15,6 @@ typedef struct
 
 } Memory;
 
-
+void memory_init(Memory* memory);
 
 #endif

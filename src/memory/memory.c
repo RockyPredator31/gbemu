@@ -1,2 +1,7 @@
-#include "../gb.h"
-#include <stdlib.h>
+#include "memory.h"
+#include <string.h>
+
+void memory_init(Memory* memory)
+{
+    memset(memory, 0, sizeof(Memory));
+}

@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-    GameBoy gb;
+    GameBoy gb = {0};
 
     FILE* f = fopen("roms/tetris.gb", "rb");
     if (!f) {

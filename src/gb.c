@@ -3,6 +3,7 @@
 void gb_init(GameBoy* gb, uint8_t* rom, size_t rom_size)
 {
     cartridge_init(&gb->cartridge, rom, rom_size);
+    memory_init(&gb->memory);
 }
 
 
