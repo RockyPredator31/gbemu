@@ -5,6 +5,9 @@
 #include <stdbool.h>
 #include "../memory/memory.h"
 
+typedef void (*MBC_WriteFunc)(struct Cartridge* cart, uint16_t addr, uint8_t value);
+
+typedef uint8_t (*MBC_ReadFunc)(struct Cartridge* cart, uint16_t addr);
 typedef enum 
 {
     MBC0 = 0,      // No MBC (32K ROM only)
@@ -41,8 +44,23 @@ typedef struct
     // Cartridge Titel
     char     title[17];
 
+    MBC_WriteFunc write;    // Funktionszeiger für write
+    MBC_ReadFunc read;      // Funktionszeiger für read
+
 } Cartridge;
 
 void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size);
+
+void mbc1_write(Cartridge* cart, uint16_t addr, uint8_t value);
+void mbc2_write(Cartridge* cart, uint16_t addr, uint8_t value);
+void mbc3_write(Cartridge* cart, uint16_t addr, uint8_t value);
+void mbc5_write(Cartridge* cart, uint16_t addr, uint8_t value);
+void mbc0_write(Cartridge* cart, uint16_t addr, uint8_t value);
+
+uint8_t mbc1_read(Cartridge* cart, uint16_t addr);
+uint8_t mbc2_read(Cartridge* cart, uint16_t addr);
+uint8_t mbc3_read(Cartridge* cart, uint16_t addr);
+uint8_t mbc5_read(Cartridge* cart, uint16_t addr);
+uint8_t mbc0_read(Cartridge* cart, uint16_t addr);
 
 #endif

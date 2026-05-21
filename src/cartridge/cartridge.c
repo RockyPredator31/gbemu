@@ -53,8 +53,32 @@ void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size)
 
     if(cart->eram_size > 0)
     {
-        cart->ram_enabled = true;
         cart->eram = (uint8_t*)malloc(cart->eram_size);
     }
+
+}
+
+void mbc0_write(Cartridge* cart, uint16_t addr, uint8_t value)
+{
+
+}
+
+void mbc1_write(Cartridge* cart, uint16_t addr, uint8_t value)
+{
+
+}
+
+void mbc2_write(Cartridge* cart, uint16_t addr, uint8_t value)
+{
+
+}
+
+void mbc3_write(Cartridge* cart, uint16_t addr, uint8_t value)
+{
+
+}
+
+void mbc5_write(Cartridge* cart, uint16_t addr, uint8_t value)
+{
 
 }
