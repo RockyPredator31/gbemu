@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct {
+typedef struct 
+{
     // Cartridge Speicher (wird vom Cartridge-Modul verwaltet)
     uint8_t* rom;           // Zeiger auf die geladene ROM
     size_t   rom_size;
