@@ -15,6 +15,10 @@ void cpu_init(CPU* cpu, GB_Version gbv)
         cpu->l = 0x4D;
         cpu->pc = 0x0100;
         cpu->sp = 0xFFFE;
+
+        cpu->halted = false;
+        cpu->stopped = false;
+        cpu->cycles = 0;
         break;
     
     default:
