@@ -32,8 +32,18 @@ uint8_t memory_read(GameBoy* gb, uint16_t addr)
     {
         if(gb->cartridge.ram_enabled && gb->cartridge.eram_size > 0 && gb->cartridge.eram != NULL)
         {
-            return gb->cartridge.eram[(addr - 0xA000) % gb->cartridge.eram_size];
+            uint32_t offset = addr - 0xA000;
+
+            // Bank Switching, falls mehr als 8KB ERAM vorhanden
+            if (gb->cartridge.eram_size > 0x2000)
+            {
+                offset += (uint32_t)gb->cartridge.ram_bank * 0x2000UL;
+            }
+
+            if (offset < gb->cartridge.eram_size)
+                return gb->cartridge.eram[offset];
         }
+        return 0xFF;
     }
 
 
@@ -106,8 +116,15 @@ void memory_write(GameBoy* gb, uint16_t addr, uint8_t value)
     {
         if(gb->cartridge.ram_enabled && gb->cartridge.eram_size > 0 && gb->cartridge.eram != NULL)
         {
-            uint32_t offset = (addr - 0xA000) % gb->cartridge.eram_size;
-            gb->cartridge.eram[offset] = value;
+           uint32_t offset = addr - 0xA000;
+
+            if (gb->cartridge.eram_size > 0x2000)
+            {
+                offset += (uint32_t)gb->cartridge.ram_bank * 0x2000UL;
+            }
+
+            if (offset < gb->cartridge.eram_size)
+                gb->cartridge.eram[offset] = value;
         }
         return;
     }
