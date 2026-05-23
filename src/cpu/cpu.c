@@ -6,7 +6,7 @@ void cpu_init(CPU* cpu, GB_Version gbv)
     {
     case DMG:
         cpu->a = 0x01;
-        cpu->f = 0x80; // z=1 | n=0 | h=0 | c=0
+        cpu->f = 0xB0; // z=1 | n=0 | h=1 | c=1
         cpu->b = 0x00;
         cpu->c = 0x13;
         cpu->d = 0x00;
