@@ -89,6 +89,23 @@ void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size)
             break;
     }
 
+    uint8_t rom_size_byte = rom[0x0148];
+
+    switch(rom_size_byte)
+    {
+        case 0x00: cart->rom_banks = 2;   break;
+        case 0x01: cart->rom_banks = 4;   break;
+        case 0x02: cart->rom_banks = 8;   break;
+        case 0x03: cart->rom_banks = 16;  break;
+        case 0x04: cart->rom_banks = 32;  break;
+        case 0x05: cart->rom_banks = 64;  break;
+        case 0x06: cart->rom_banks = 128; break;
+        case 0x07: cart->rom_banks = 256; break;
+        case 0x08: cart->rom_banks = 512; break;
+        default:   cart->rom_banks = 2;   break;
+    }
+
+
 }
 
 void mbc0_write(Cartridge* cart, uint16_t addr, uint8_t value)
@@ -163,6 +180,9 @@ uint8_t mbc1_read(Cartridge* cart, uint16_t addr)
     else if (addr <= 0x7FFF)                // Bank 1-N
     {
         uint32_t bank = cart->rom_bank;
+
+        if (cart->rom_banks > 1)
+            bank &= (cart->rom_banks - 1);     // z.B. bei 64 Banks → mask = 63
         
         // Bank 0 kann hier nicht ausgewählt werden → wird zu Bank 1
         if (bank == 0) bank = 1;
