@@ -7,7 +7,6 @@
 
 typedef struct
 {
-    uint16_t pc;    // Program Counter
 
     uint8_t a, f;      // AF Register
     uint8_t b, c;      // BC Register
