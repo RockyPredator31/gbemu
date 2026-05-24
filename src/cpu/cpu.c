@@ -28,10 +28,10 @@ void cpu_init(CPU *cpu, GB_Version gbv)
 }
 
 // ============ Flag SET ===========================
-void cpu_set_z(CPU *cpu) { cpu->f = cpu->f | 0x80u; }
-void cpu_set_n(CPU *cpu) { cpu->f = cpu->f | 0x40u; }
-void cpu_set_h(CPU *cpu) { cpu->f = cpu->f | 0x20u; }
-void cpu_set_c(CPU *cpu) { cpu->f = cpu->f | 0x10u; }
+void cpu_set_z(CPU *cpu) { cpu->f = cpu->f | 0x80; }
+void cpu_set_n(CPU *cpu) { cpu->f = cpu->f | 0x40; }
+void cpu_set_h(CPU *cpu) { cpu->f = cpu->f | 0x20; }
+void cpu_set_c(CPU *cpu) { cpu->f = cpu->f | 0x10; }
 
 // =============== Flag CLEAR =======================
 void cpu_clear_z(CPU *cpu) { cpu->f = cpu->f & (~0x80u); }
@@ -39,29 +39,35 @@ void cpu_clear_n(CPU *cpu) { cpu->f = cpu->f & (~0x40u); }
 void cpu_clear_h(CPU *cpu) { cpu->f = cpu->f & (~0x20u); }
 void cpu_clear_c(CPU *cpu) { cpu->f = cpu->f & (~0x10u); }
 
+// =============== GET Flag ==========================
+static inline uint8_t cpu_get_z(const CPU* cpu) { return (cpu->f & 0x80 ? 1 : 0); }
+static inline uint8_t cpu_get_n(const CPU* cpu) { return (cpu->f & 0x40 ? 1 : 0); }
+static inline uint8_t cpu_get_h(const CPU* cpu) { return (cpu->f & 0x20 ? 1 : 0); }
+static inline uint8_t cpu_get_c(const CPU* cpu) { return (cpu->f & 0x10 ? 1 : 0); }
+
 // ========= Get Registers ==========================
-uint16_t cpu_get_af(CPU* cpu) { return ( (cpu->a << 8) | cpu->f); }
-uint16_t cpu_get_bc(CPU* cpu) { return ( (cpu->b << 8) | cpu->c); }
-uint16_t cpu_get_de(CPU* cpu) { return ( (cpu->d << 8) | cpu->e); }
-uint16_t cpu_get_hl(CPU* cpu) { return ( (cpu->h << 8) | cpu->l); }
+static inline uint16_t cpu_get_af(const CPU* cpu) { return ( (cpu->a << 8) | cpu->f); }
+static inline uint16_t cpu_get_bc(const CPU* cpu) { return ( (cpu->b << 8) | cpu->c); }
+static inline uint16_t cpu_get_de(const CPU* cpu) { return ( (cpu->d << 8) | cpu->e); }
+static inline uint16_t cpu_get_hl(const CPU* cpu) { return ( (cpu->h << 8) | cpu->l); }
 
 // ========= Set Registers ===========================
-void cpu_set_af(CPU* cpu, uint16_t value) { 
+static inline void cpu_set_af(CPU* cpu, uint16_t value) { 
     cpu->a = value >> 8; 
     cpu->f = value & 0xFF; 
 }
 
-void cpu_set_bc(CPU* cpu, uint16_t value) { 
+static inline void cpu_set_bc(CPU* cpu, uint16_t value) { 
     cpu->b = value >> 8; 
     cpu->c = value & 0xFF; 
 }
 
-void cpu_set_de(CPU* cpu, uint16_t value) { 
+static inline void cpu_set_de(CPU* cpu, uint16_t value) { 
     cpu->d = value >> 8; 
     cpu->e = value & 0xFF; 
 }
 
-void cpu_set_hl(CPU* cpu, uint16_t value) { 
+static inline void cpu_set_hl(CPU* cpu, uint16_t value) { 
     cpu->h = value >> 8; 
     cpu->l = value & 0xFF; 
 }
@@ -75,10 +81,6 @@ static inline void cpu_check_z(CPU* cpu, uint8_t value)
         cpu_clear_z(cpu);
 }
 
-static inline void cpu_check_c(CPU* cpu, uint8_t value)
-{
-    
-}
 // 8-bit
 static inline void cpu_check_h_inc(CPU* cpu, uint8_t value)
 {
@@ -98,7 +100,7 @@ static inline void cpu_check_h_dec(CPU* cpu, uint8_t value)
 
 static inline void cpu_add_hl_r16(CPU* cpu, uint16_t value)
 {
-    uint16_t result = cpu_get_hl(cpu) + value;
+    uint32_t result = cpu_get_hl(cpu) + value;
 
     cpu_clear_n(cpu);
     // Half Carry (Bit 11)
@@ -113,7 +115,7 @@ static inline void cpu_add_hl_r16(CPU* cpu, uint16_t value)
     else
         cpu_clear_c(cpu);
         
-    cpu_set_hl(cpu, result);
+    cpu_set_hl(cpu, (uint16_t)result);
         
     cpu->cycles += 8;
 }
@@ -200,6 +202,7 @@ uint8_t cpu_fetch(GameBoy *gb)
     return opcode;
 }
 
+
 // ========= decode and execute ========
 void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 {
@@ -210,19 +213,16 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 4;
         break;
     case 0x01: /* LD BC, n16 */
-        uint16_t value = memory_read(gb, gb->cpu.pc) | (memory_read(gb, gb->cpu.pc + 1) << 8);
-        cpu_set_bc(&gb->cpu, value);
+        cpu_set_bc(&gb->cpu, memory_read16(gb, gb->cpu.pc));
         gb->cpu.pc += 2;
         gb->cpu.cycles += 12;
         break;
     case 0x02: /* LD (BC), A */
-        uint16_t address = cpu_get_bc(&gb->cpu);
-        memory_write(gb, address, gb->cpu.a);
+        memory_write(gb, cpu_get_bc(&gb->cpu), gb->cpu.a);
         gb->cpu.cycles += 8;
         break;
     case 0x03: /* INC BC */
-        uint16_t bc = cpu_get_bc(&gb->cpu);
-        cpu_set_bc(&gb->cpu, bc + 1);
+        cpu_set_bc(&gb->cpu, cpu_get_bc(&gb->cpu) + 1);
         gb->cpu.cycles += 8;
         break;
     case 0x04: /* INC B */
@@ -251,9 +251,8 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 4;
         break;
     case 0x08: /* LD (a16), SP */
-        uint16_t address = memory_read(gb, gb->cpu.pc) | (memory_read(gb, gb->cpu.pc + 1) << 8); 
-        memory_write(gb, address,     gb->cpu.sp & 0xFF);
-        memory_write(gb, address + 1, gb->cpu.sp >> 8);
+        uint16_t address = memory_read16(gb, gb->cpu.pc); 
+        memory_write16(gb, address, gb->cpu.sp);
         gb->cpu.pc += 2;
         gb->cpu.cycles += 20;
         break;
@@ -296,28 +295,63 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 
     /* ==================== 0x10 - 0x1F ==================== */
     case 0x10: /* STOP 0 */
+        gb->cpu.stopped = true;
+        gb->cpu.cycles += 4;
         break;
     case 0x11: /* LD DE, n16 */
+        cpu_set_de(&gb->cpu, memory_read16(gb, gb->cpu.pc));
+        gb->cpu.pc += 2;
+        gb->cpu.cycles += 12;
         break;
     case 0x12: /* LD (DE), A */
+        memory_write(gb, cpu_get_de(&gb->cpu), gb->cpu.a);
+        gb->cpu.cycles += 8;
         break;
     case 0x13: /* INC DE */
+        cpu_set_bc(&gb->cpu, cpu_get_de(&gb->cpu) + 1);
+        gb->cpu.cycles += 8;
         break;
     case 0x14: /* INC D */
+        cpu_inc_r8(gb, 2);
         break;
     case 0x15: /* DEC D */
+        cpu_dec_r8(gb, 2);
         break;
     case 0x16: /* LD D, n8 */
+        gb->cpu.d = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
+        gb->cpu.cycles += 8;
         break;
     case 0x17: /* RLA */
+        uint8_t carry = (gb->cpu.a & 0x80)>> 7;
+        gb->cpu.a = (gb->cpu.a << 1) | cpu_get_c(&gb->cpu);
+
+        if(carry)
+            cpu_set_c(&gb->cpu);
+        else
+            cpu_clear_c(&gb->cpu);
+
+        cpu_clear_z(&gb->cpu);
+        cpu_clear_n(&gb->cpu);
+        cpu_clear_h(&gb->cpu);
+        gb->cpu.cycles += 4;
         break;
     case 0x18: /* JR r8 */
+        int8_t offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
+        gb->cpu.pc += 1;                                        // PC auf nächsten Opcode
+        gb->cpu.pc += offset;                                   // Relativer Sprung
+        gb->cpu.cycles += 12;
         break;
     case 0x19: /* ADD HL, DE */
+        cpu_add_hl_r16(&gb->cpu, cpu_get_de(&gb->cpu));
         break;
     case 0x1A: /* LD A, (DE) */
+        gb->cpu.a = memory_read(gb, cpu_get_de(&gb->cpu));
+        gb->cpu.cycles += 8;
         break;
     case 0x1B: /* DEC DE */
+        cpu_set_de(&gb->cpu, cpu_get_de(&gb->cpu) - 1);
+        gb->cpu.cycles += 8;
         break;
     case 0x1C: /* INC E */
         break;

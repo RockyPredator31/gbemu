@@ -179,3 +179,14 @@ void memory_write(GameBoy* gb, uint16_t addr, uint8_t value)
     }
 
 }
+
+uint16_t memory_read16(GameBoy* gb, uint16_t addr)
+{
+    return memory_read(gb, addr) | ((uint16_t)memory_read(gb, addr + 1) << 8);
+}
+
+void memory_write16(GameBoy* gb, uint16_t addr, uint16_t value)
+{
+    memory_write(gb, addr,     value & 0xFF);     // Low Byte
+    memory_write(gb, addr + 1, value >> 8);       // High Byte
+}
