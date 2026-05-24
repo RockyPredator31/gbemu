@@ -3,6 +3,7 @@
 
 #include "cartridge/cartridge.h"
 #include "memory/memory.h"
+#include "cpu/cpu.h"
 
 //SCREEN
 #define SCREEN_WIDTH 160
@@ -16,13 +17,18 @@
 #define HRAM_START 0xFF80
 #define IE 0xFFFF                 //Interrupt enabled
 
+typedef enum
+{
+    DMG = 0,
+    CGB
+} GB_Version;
 
 
 typedef struct 
 {
     Cartridge cartridge;
     Memory memory;
-
+    CPU cpu;
     uint8_t InterruptEnableRegister;
 
 

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "../utils/utils.h"
+#include "../gb.h"
 
 typedef struct
 {
@@ -25,5 +25,24 @@ typedef struct
 
 
 void cpu_init(CPU* cpu, GB_Version gbv);
+
+uint8_t cpu_fetch(GameBoy* gb);
+void cpu_decode_and_execute(GameBoy* gb, uint8_t opcode);
+void cpu_step(GameBoy* gb);
+
+// ====== Flag SET =======
+void cpu_set_z(CPU* cpu);
+void cpu_set_n(CPU* cpu);
+void cpu_set_h(CPU* cpu);
+void cpu_set_c(CPU* cpu);
+// ====== Flag CLEAR =======
+void cpu_clear_z(CPU* cpu);
+void cpu_clear_n(CPU* cpu);
+void cpu_clear_h(CPU* cpu);
+void cpu_clear_c(CPU* cpu);
+
+// ===== Operations ========
+void op_nop(GameBoy* gb);
+
 
 #endif
