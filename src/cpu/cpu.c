@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include "../gb.h"
 
 void cpu_init(CPU *cpu, GB_Version gbv)
 {
@@ -38,6 +39,18 @@ void cpu_clear_n(CPU *cpu) { cpu->f = cpu->f & (~0x40u); }
 void cpu_clear_h(CPU *cpu) { cpu->f = cpu->f & (~0x20u); }
 void cpu_clear_c(CPU *cpu) { cpu->f = cpu->f & (~0x10u); }
 
+// ========= Get Registers ==========================
+uint16_t cpu_get_af(CPU* cpu) { return ( (cpu->a << 8) | cpu->f); }
+uint16_t cpu_get_bc(CPU* cpu) { return ( (cpu->b << 8) | cpu->c); }
+uint16_t cpu_get_de(CPU* cpu) { return ( (cpu->d << 8) | cpu->e); }
+uint16_t cpu_get_hl(CPU* cpu) { return ( (cpu->h << 8) | cpu->l); }
+
+// ========= Set Registers ===========================
+void cpu_set_af(CPU* cpu, uint16_t value) { cpu->a = value >> 8; cpu->f = value & 0xFF; }
+void cpu_set_bc(CPU* cpu, uint16_t value) { cpu->b = value >> 8; cpu->c = value & 0xFF; }
+void cpu_set_de(CPU* cpu, uint16_t value) { cpu->d = value >> 8; cpu->e = value & 0xFF; }
+void cpu_set_hl(CPU* cpu, uint16_t value) { cpu->h = value >> 8; cpu->l = value & 0xFF; }
+
 uint8_t cpu_fetch(GameBoy *gb)
 {
     uint8_t opcode = memory_read(gb, gb->cpu.pc);
@@ -56,13 +69,25 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
     switch (opcode)
     {
     /* ==================== 0x00 - 0x0F ==================== */
-    case 0x00: /* NOP */
+    case 0x00:
+        gb->cpu.cycles += 4;
         break;
     case 0x01: /* LD BC, n16 */
+        uint16_t value = memory_read(gb, gb->cpu.pc + 1) |
+                    (memory_read(gb, gb->cpu.pc + 2) << 8);
+        cpu_set_bc(&gb->cpu, value);
+        gb->cpu.pc += 3;
+        gb->cpu.cycles += 12;
         break;
     case 0x02: /* LD (BC), A */
+        uint16_t address = cpu_get_bc(&gb->cpu);
+        memory_write(gb, address, gb->cpu.a);
+        gb->cpu.cycles += 8;
         break;
     case 0x03: /* INC BC */
+        uint16_t bc = cpu_get_bc(&gb->cpu);
+        cpu_set_bc(&gb->cpu, bc + 1);
+        gb->cpu.cycles += 8;
         break;
     case 0x04: /* INC B */
         break;
@@ -442,10 +467,14 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
     case 0xFF: /* RST 38H */
         break;
     }
-}
 
-// ========= Operations
-void op_nop(GameBoy* gb)
-{
-    
+    if (gb->cpu.cycles >= 70224)        // 70224 Zyklen = 1 Frame (DMG)
+    {
+        // Hier kommt später:
+        // - Bild rendern (PPU)
+        // - Sound updaten
+        // - Input updaten
+
+        gb->cpu.cycles -= 70224;        // WICHTIG: subtrahieren, nicht auf 0 setzen!
+    }
 }

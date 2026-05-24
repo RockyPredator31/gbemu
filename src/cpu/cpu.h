@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "../gb.h"
 
+typedef struct GameBoy GameBoy;
 typedef struct
 {
     // 8-Bit Register
@@ -41,8 +41,16 @@ void cpu_clear_n(CPU* cpu);
 void cpu_clear_h(CPU* cpu);
 void cpu_clear_c(CPU* cpu);
 
-// ===== Operations ========
-void op_nop(GameBoy* gb);
+// ========= Get Registers ==========================
+uint16_t cpu_get_af(CPU* cpu);
+uint16_t cpu_get_bc(CPU* cpu);
+uint16_t cpu_get_de(CPU* cpu);
+uint16_t cpu_get_hl(CPU* cpu);
 
+// ========= Set Register ===========================
+void cpu_set_af(CPU* cpu, uint16_t value);
+void cpu_set_bc(CPU* cpu, uint16_t value);
+void cpu_set_de(CPU* cpu, uint16_t value);
+void cpu_set_hl(CPU* cpu, uint16_t value);
 
 #endif
