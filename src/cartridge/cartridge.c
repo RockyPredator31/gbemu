@@ -1,6 +1,7 @@
 #include "cartridge.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size)
 {

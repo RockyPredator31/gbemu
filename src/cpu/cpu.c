@@ -40,34 +40,34 @@ void cpu_clear_h(CPU *cpu) { cpu->f = cpu->f & (~0x20u); }
 void cpu_clear_c(CPU *cpu) { cpu->f = cpu->f & (~0x10u); }
 
 // =============== GET Flag ==========================
-static inline uint8_t cpu_get_z(const CPU* cpu) { return (cpu->f & 0x80 ? 1 : 0); }
-static inline uint8_t cpu_get_n(const CPU* cpu) { return (cpu->f & 0x40 ? 1 : 0); }
-static inline uint8_t cpu_get_h(const CPU* cpu) { return (cpu->f & 0x20 ? 1 : 0); }
-static inline uint8_t cpu_get_c(const CPU* cpu) { return (cpu->f & 0x10 ? 1 : 0); }
+uint8_t cpu_get_z(const CPU* cpu) { return (cpu->f & 0x80 ? 1 : 0); }
+uint8_t cpu_get_n(const CPU* cpu) { return (cpu->f & 0x40 ? 1 : 0); }
+uint8_t cpu_get_h(const CPU* cpu) { return (cpu->f & 0x20 ? 1 : 0); }
+uint8_t cpu_get_c(const CPU* cpu) { return (cpu->f & 0x10 ? 1 : 0); }
 
 // ========= Get Registers ==========================
-static inline uint16_t cpu_get_af(const CPU* cpu) { return ( (cpu->a << 8) | cpu->f); }
-static inline uint16_t cpu_get_bc(const CPU* cpu) { return ( (cpu->b << 8) | cpu->c); }
-static inline uint16_t cpu_get_de(const CPU* cpu) { return ( (cpu->d << 8) | cpu->e); }
-static inline uint16_t cpu_get_hl(const CPU* cpu) { return ( (cpu->h << 8) | cpu->l); }
+uint16_t cpu_get_af(const CPU* cpu) { return ( (cpu->a << 8) | cpu->f); }
+uint16_t cpu_get_bc(const CPU* cpu) { return ( (cpu->b << 8) | cpu->c); }
+uint16_t cpu_get_de(const CPU* cpu) { return ( (cpu->d << 8) | cpu->e); }
+uint16_t cpu_get_hl(const CPU* cpu) { return ( (cpu->h << 8) | cpu->l); }
 
 // ========= Set Registers ===========================
-static inline void cpu_set_af(CPU* cpu, uint16_t value) { 
+void cpu_set_af(CPU* cpu, uint16_t value) { 
     cpu->a = value >> 8; 
     cpu->f = value & 0xFF; 
 }
 
-static inline void cpu_set_bc(CPU* cpu, uint16_t value) { 
+void cpu_set_bc(CPU* cpu, uint16_t value) { 
     cpu->b = value >> 8; 
     cpu->c = value & 0xFF; 
 }
 
-static inline void cpu_set_de(CPU* cpu, uint16_t value) { 
+void cpu_set_de(CPU* cpu, uint16_t value) { 
     cpu->d = value >> 8; 
     cpu->e = value & 0xFF; 
 }
 
-static inline void cpu_set_hl(CPU* cpu, uint16_t value) { 
+void cpu_set_hl(CPU* cpu, uint16_t value) { 
     cpu->h = value >> 8; 
     cpu->l = value & 0xFF; 
 }
@@ -206,6 +206,9 @@ uint8_t cpu_fetch(GameBoy *gb)
 // ========= decode and execute ========
 void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 {
+    uint8_t carry = 0;
+    uint16_t address = 0;
+    int8_t offset = 0;
     switch (opcode)
     {
     /* ==================== 0x00 - 0x0F ==================== */
@@ -237,7 +240,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 8;
         break;
     case 0x07: /* RLCA */
-        uint8_t carry = (gb->cpu.a & 0x80) >> 7;
+        carry = (gb->cpu.a & 0x80) >> 7;
         gb->cpu.a = (gb->cpu.a << 1) | carry;
         cpu_clear_h(&gb->cpu);
         cpu_clear_n(&gb->cpu);
@@ -251,7 +254,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 4;
         break;
     case 0x08: /* LD (a16), SP */
-        uint16_t address = memory_read16(gb, gb->cpu.pc); 
+        address = memory_read16(gb, gb->cpu.pc); 
         memory_write16(gb, address, gb->cpu.sp);
         gb->cpu.pc += 2;
         gb->cpu.cycles += 20;
@@ -279,7 +282,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 8;
         break;
     case 0x0F: /* RRCA */
-        uint8_t carry = gb->cpu.a & 0x01;
+        carry = gb->cpu.a & 0x01;
         gb->cpu.a = (gb->cpu.a >> 1) | (carry << 7);
         cpu_clear_z(&gb->cpu);
         cpu_clear_n(&gb->cpu);
@@ -323,7 +326,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 8;
         break;
     case 0x17: /* RLA */
-        uint8_t carry = (gb->cpu.a & 0x80)>> 7;
+        carry = (gb->cpu.a & 0x80)>> 7;
         gb->cpu.a = (gb->cpu.a << 1) | cpu_get_c(&gb->cpu);
 
         if(carry)
@@ -337,7 +340,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 4;
         break;
     case 0x18: /* JR r8 */
-        int8_t offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
         gb->cpu.pc += 1;                                        // PC auf nächsten Opcode
         gb->cpu.pc += offset;                                   // Relativer Sprung
         gb->cpu.cycles += 12;

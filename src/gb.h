@@ -17,14 +17,9 @@
 #define HRAM_START 0xFF80
 #define IE 0xFFFF                 //Interrupt enabled
 
-typedef enum
-{
-    DMG = 0,
-    CGB
-} GB_Version;
+typedef struct GameBoy GameBoy;
 
-
-typedef struct 
+typedef struct GameBoy
 {
     Cartridge cartridge;
     Memory memory;
@@ -33,7 +28,7 @@ typedef struct
 
 
 
-} GameBoy;
+};
 
 
 void gb_init(GameBoy* gb, uint8_t* rom, size_t rom_size);

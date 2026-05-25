@@ -3,11 +3,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "../memory/memory.h"
 
-typedef void (*MBC_WriteFunc)(struct Cartridge* cart, uint16_t addr, uint8_t value);
+typedef struct Cartridge Cartridge;
 
-typedef uint8_t (*MBC_ReadFunc)(struct Cartridge* cart, uint16_t addr);
+typedef void (*MBC_WriteFunc)(Cartridge* cart, uint16_t addr, uint8_t value);
+
+typedef uint8_t (*MBC_ReadFunc)(Cartridge* cart, uint16_t addr);
 typedef enum 
 {
     MBC0 = 0,      // No MBC (32K ROM only)
@@ -18,7 +19,7 @@ typedef enum
     MBC_NONE = 0xFF
 } MBC_Type;
 
-typedef struct 
+typedef struct Cartridge
 {
     uint8_t* rom;
     size_t   rom_size;      
@@ -48,7 +49,9 @@ typedef struct
     MBC_WriteFunc write;    // Funktionszeiger für write
     MBC_ReadFunc read;      // Funktionszeiger für read
 
-} Cartridge;
+};
+
+
 
 void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size);
 
