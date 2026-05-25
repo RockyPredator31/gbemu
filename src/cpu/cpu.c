@@ -172,7 +172,7 @@ static inline void cpu_dec_r8(GameBoy* gb, uint8_t reg)
         default: return;
     }
 
-    cpu_clear_n(&gb->cpu);
+    cpu_set_n(&gb->cpu);
     cpu_check_z(&gb->cpu, result);
     cpu_check_h_dec(&gb->cpu, result);
     gb->cpu.cycles += 4;
@@ -206,6 +206,7 @@ uint8_t cpu_fetch(GameBoy *gb)
 // ========= decode and execute ========
 void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 {
+    uint8_t result = 0;
     uint8_t carry = 0;
     uint16_t address = 0;
     int8_t offset = 0;
@@ -400,50 +401,149 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 12;
         break;
     case 0x22: /* LD (HL+), A */
-        
+        address = cpu_get_hl(&gb->cpu);
+        memory_write(gb, address, gb->cpu.a);
+        cpu_set_hl(&gb->cpu, address + 1);
+        gb->cpu.cycles += 8;
         break; // LDI (HL), A
     case 0x23: /* INC HL */
+        cpu_set_hl(&gb->cpu, cpu_get_hl(&gb->cpu) + 1);
+        gb->cpu.cycles += 8;
         break;
     case 0x24: /* INC H */
+        cpu_inc_r8(gb, 4);
         break;
     case 0x25: /* DEC H */
+        cpu_dec_r8(gb, 4);
         break;
     case 0x26: /* LD H, n8 */
+        gb->cpu.h = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
+        gb->cpu.cycles += 8;
         break;
     case 0x27: /* DAA */
+        result = 0;
+        carry = 0;
+    
+        if (cpu_get_h(&gb->cpu) || (!cpu_get_n(&gb->cpu) && (gb->cpu.a & 0x0F) > 9)) {
+            result |= 0x06;
+        }
+        if (cpu_get_c(&gb->cpu) || (!cpu_get_n(&gb->cpu) && gb->cpu.a > 0x99)) {
+            result |= 0x60;
+            carry = 1;
+        }
+    
+        if (cpu_get_n(&gb->cpu)) {
+            gb->cpu.a -= result;
+        } else {
+            gb->cpu.a += result;
+        }
+    
+        cpu_check_z(&gb->cpu, gb->cpu.a);
+        cpu_clear_h(&gb->cpu);
+        if (carry) {
+            cpu_set_c(&gb->cpu);
+        } else {
+            cpu_clear_c(&gb->cpu);
+        }
+        gb->cpu.cycles += 4;
         break;
     case 0x28: /* JR Z, r8 */
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
+        gb->cpu.pc++;                                        // PC auf nächsten Opcode
+        if (cpu_get_z(&gb->cpu) == 1){
+            gb->cpu.pc += offset;
+            gb->cpu.cycles += 12;
+        } else {
+            gb->cpu.cycles += 8;
+        }
         break;
     case 0x29: /* ADD HL, HL */
+        cpu_add_hl_r16(&gb->cpu, cpu_get_hl(&gb->cpu));
         break;
     case 0x2A: /* LD A, (HL+) */
+        gb->cpu.a = memory_read(gb, cpu_get_hl(&gb->cpu));
+        cpu_set_hl(&gb->cpu, cpu_get_hl(&gb->cpu) + 1);
+        gb->cpu.cycles += 8;
         break; // LDI A, (HL)
     case 0x2B: /* DEC HL */
+        cpu_set_hl(&gb->cpu, cpu_get_hl(&gb->cpu) - 1);
+        gb->cpu.cycles += 8;
         break;
     case 0x2C: /* INC L */
+        cpu_inc_r8(gb, 5);
         break;
     case 0x2D: /* DEC L */
+        cpu_dec_r8(gb, 5);
         break;
     case 0x2E: /* LD L, n8 */
+        gb->cpu.l = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
+        gb->cpu.cycles += 8;
         break;
     case 0x2F: /* CPL */
+        gb->cpu.a = ~(gb->cpu.a);
+        cpu_set_c(&gb->cpu);
+        cpu_set_h(&gb->cpu);
+        gb->cpu.cycles += 4;
         break;
-
     case 0x30: /* JR NC, r8 */
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
+        gb->cpu.pc++;                                        // PC auf nächsten Opcode
+
+        if (cpu_get_c(&gb->cpu) == 0){
+            gb->cpu.pc += offset;
+            gb->cpu.cycles += 12;
+        } else {
+            gb->cpu.cycles += 8;
+        }
         break;
     case 0x31: /* LD SP, n16 */
+        gb->cpu.sp = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        gb->cpu.cycles += 12;
         break;
     case 0x32: /* LD (HL-), A */
+        address = cpu_get_hl(&gb->cpu);
+        memory_write(gb, address, gb->cpu.a);
+        cpu_set_hl(&gb->cpu, address - 1);
+        gb->cpu.cycles += 8;
         break; // LDD (HL), A
     case 0x33: /* INC SP */
+        gb->cpu.sp++;
+        gb->cpu.cycles += 8;
         break;
     case 0x34: /* INC (HL) */
+        address = cpu_get_hl(&gb->cpu);
+        result = memory_read(gb, address);
+        result++;
+        memory_write(gb, address, result);
+        cpu_clear_n(&gb->cpu);
+        cpu_check_z(&gb->cpu, result);
+        cpu_check_h_inc(&gb->cpu, result);
+        gb->cpu.cycles += 12;
         break;
     case 0x35: /* DEC (HL) */
+        address = cpu_get_hl(&gb->cpu);
+        result = memory_read(gb, address);
+        result--;
+        memory_write(gb, address, result);
+        cpu_set_n(&gb->cpu);
+        cpu_check_z(&gb->cpu, result);
+        cpu_check_h_dec(&gb->cpu, result);
+        gb->cpu.cycles += 12;
         break;
     case 0x36: /* LD (HL), n8 */
+        result = memory_read(gb, gb->cpu.pc);
+        memory_write(gb, cpu_get_hl(&gb->cpu), result);
+        gb->cpu.pc++;
+        gb->cpu.cycles += 12;
         break;
     case 0x37: /* SCF */
+        cpu_set_c(&gb->cpu);
+        cpu_clear_h(&gb->cpu);
+        cpu_clear_n(&gb->cpu);
+        gb->cpu.cycles += 4;
         break;
     case 0x38: /* JR C, r8 */
         break;
