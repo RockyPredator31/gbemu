@@ -94,16 +94,16 @@ void cartridge_init(Cartridge* cart, uint8_t* rom, size_t rom_size)
 
     switch(rom_size_byte)
     {
-        case 0x00: cart->rom_banks = 2;   break;
-        case 0x01: cart->rom_banks = 4;   break;
-        case 0x02: cart->rom_banks = 8;   break;
-        case 0x03: cart->rom_banks = 16;  break;
-        case 0x04: cart->rom_banks = 32;  break;
-        case 0x05: cart->rom_banks = 64;  break;
-        case 0x06: cart->rom_banks = 128; break;
-        case 0x07: cart->rom_banks = 256; break;
-        case 0x08: cart->rom_banks = 512; break;
-        default:   cart->rom_banks = 2;   break;
+        case 0x00: cart->rom_banks = 2u;   break;
+        case 0x01: cart->rom_banks = 4u;   break;
+        case 0x02: cart->rom_banks = 8u;   break;
+        case 0x03: cart->rom_banks = 16u;  break;
+        case 0x04: cart->rom_banks = 32u;  break;
+        case 0x05: cart->rom_banks = 64u;  break;
+        case 0x06: cart->rom_banks = 128u; break;
+        case 0x07: cart->rom_banks = 256u; break; //hier warnung
+        case 0x08: cart->rom_banks = 512u; break; //hier warnung
+        default:   cart->rom_banks = 2u;   break;
     }
 
 
@@ -120,13 +120,13 @@ void mbc0_write(Cartridge* cart, uint16_t addr, uint8_t value)
 
 void mbc1_write(Cartridge* cart, uint16_t addr, uint8_t value)
 {
-     if (addr >= 0x0000 && addr <= 0x1FFF)           // RAM Enable
+     if (addr <= 0x1FFF)           // RAM Enable
     {
         cart->ram_enabled = ((value & 0x0F) == 0x0A);
     }
     else if (addr >= 0x2000 && addr <= 0x3FFF)      // ROM Bank Number (untere 5 Bits)
     {
-        uint8_t bank = value & 0x1F;                // nur die unteren 5 Bits
+        uint16_t bank = value & 0x1F;                // nur die unteren 5 Bits
         if (bank == 0) bank = 1;                    // Bank 0 ist verboten hier
 
         cart->rom_bank = (cart->rom_bank & 0xE0) | bank;   // untere 5 Bits setzen

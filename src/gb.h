@@ -28,7 +28,7 @@ typedef struct GameBoy
 
 
 
-};
+} GameBoy;
 
 
 void gb_init(GameBoy* gb, uint8_t* rom, size_t rom_size);

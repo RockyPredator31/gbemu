@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "GameBoy Emulator Build", // Name der Aufgabe
+            "command": "gcc",
+            "args": [
+                "-Wall",
+                "-Wextra",
+                "-std=c17",
+                "-g",
+                "-Isrc",
+                "${workspaceFolder}/src/main.c",
+                "${workspaceFolder}/src/gb.c",
+                "${workspaceFolder}/src/cartridge/cartridge.c",
+                "${workspaceFolder}/src/cpu/cpu.c",
+                "${workspaceFolder}/src/memory/memory.c",
+                "-o",
+                "${workspaceFolder}/gbemu.exe",
+                "-lmingw32",
+                "-lSDL2main",
+                "-lSDL2",
+                "-mwindows"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true // Macht diesen Befehl zum Standard-Build
+            }
+        }
+    ]
+}

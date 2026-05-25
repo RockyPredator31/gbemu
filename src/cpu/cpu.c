@@ -341,7 +341,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         break;
     case 0x18: /* JR r8 */
         offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
-        gb->cpu.pc += 1;                                        // PC auf nächsten Opcode
+        gb->cpu.pc++;                                        // PC auf nächsten Opcode
         gb->cpu.pc += offset;                                   // Relativer Sprung
         gb->cpu.cycles += 12;
         break;
@@ -357,20 +357,50 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 8;
         break;
     case 0x1C: /* INC E */
+        cpu_inc_r8(gb, 3);
         break;
     case 0x1D: /* DEC E */
+        cpu_dec_r8(gb, 3);
         break;
     case 0x1E: /* LD E, n8 */
+        gb->cpu.e = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
+        gb->cpu.cycles += 8;
         break;
     case 0x1F: /* RRA */
+        carry = gb->cpu.a & 0x01;
+        gb->cpu.a = (gb->cpu.a >> 1) | (cpu_get_c(&gb->cpu) << 7);
+
+        if(carry)
+            cpu_set_c(&gb->cpu);
+        else
+            cpu_clear_c(&gb->cpu);
+
+        cpu_clear_z(&gb->cpu);
+        cpu_clear_n(&gb->cpu);
+        cpu_clear_h(&gb->cpu);
+        gb->cpu.cycles += 4;
         break;
 
     /* ==================== 0x20 - 0x3F ==================== */
     case 0x20: /* JR NZ, r8 */
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
+        gb->cpu.pc++;                                        // PC auf nächsten Opcode
+
+        if (cpu_get_z(&gb->cpu) == 0){
+            gb->cpu.pc += offset;
+            gb->cpu.cycles += 12;
+        } else {
+            gb->cpu.cycles += 8;
+        }
         break;
     case 0x21: /* LD HL, n16 */
+        cpu_set_hl(&gb->cpu, memory_read16(gb, gb->cpu.pc));
+        gb->cpu.pc += 2;
+        gb->cpu.cycles += 12;
         break;
     case 0x22: /* LD (HL+), A */
+        
         break; // LDI (HL), A
     case 0x23: /* INC HL */
         break;

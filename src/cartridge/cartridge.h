@@ -25,11 +25,11 @@ typedef struct Cartridge
     size_t   rom_size;      
 
     // Bank Switching
-    uint8_t rom_bank;
-    uint8_t ram_bank;
+    uint16_t rom_bank;
+    uint16_t ram_bank;
 
-    uint8_t  rom_banks;          // Anzahl ROM-Banken (z.B. 64 = 1MB)
-    uint8_t  ram_banks;          // Anzahl RAM-Banken
+    uint16_t  rom_banks;          // Anzahl ROM-Banken (z.B. 64 = 1MB)
+    uint16_t  ram_banks;          // Anzahl RAM-Banken
 
     uint8_t* eram;
     size_t eram_size;
@@ -49,7 +49,7 @@ typedef struct Cartridge
     MBC_WriteFunc write;    // Funktionszeiger für write
     MBC_ReadFunc read;      // Funktionszeiger für read
 
-};
+} Cartridge;
 
 
 
