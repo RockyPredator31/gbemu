@@ -191,7 +191,9 @@ void cpu_push16(GameBoy* gb, uint16_t value) {
 
 uint16_t cpu_pop16(GameBoy* gb)
 {
-    return (memory_read(gb, gb->cpu.sp + 1)  >> 8) | memory_read(gb, gb->cpu.sp);
+    uint16_t result = (memory_read(gb, gb->cpu.sp + 1)  << 8) | memory_read(gb, gb->cpu.sp);
+    gb->cpu.sp += 2;
+    return result;
 }
 
 // =============== Hilfsfunktionen für 0x40 - 0x7F ====================
@@ -987,8 +989,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
     case 0xC0: /* RET NZ */
         if(cpu_get_z(&gb->cpu) == 0)
         {
-            gb->cpu.pc = (memory_read(gb, gb->cpu.sp + 1)  >> 8) | memory_read(gb, gb->cpu.sp);
-            gb->cpu.sp += 2;
+            gb->cpu.pc = cpu_pop16(gb);
             gb->cpu.cycles += 20;
         }else
         {
@@ -997,7 +998,6 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         break;
     case 0xC1: /* POP BC */
         cpu_set_bc(&gb->cpu, cpu_pop16(gb));
-        gb->cpu.sp += 2;
         gb->cpu.cycles += 12;
         break;
     case 0xC2: /* JP NZ, a16 */
@@ -1035,41 +1035,203 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 16;
         break;
     case 0xC6: /* ADD A, n8 */
+            result = memory_read(gb, gb->cpu.pc);        
+            gb->cpu.pc++;
+
+            result32 = gb->cpu.a + result;
+
+            if((uint8_t)result32 == 0)
+                cpu_set_z(&gb->cpu);
+            else
+                cpu_clear_z(&gb->cpu);
+            
+            cpu_clear_n(&gb->cpu);
+            
+            if(((gb->cpu.a & 0x0F) + (result & 0x0F)) > 0x0F)
+                cpu_set_h(&gb->cpu);
+            else
+                cpu_clear_h(&gb->cpu);
+            
+            if (result32 > 0xFF) 
+                cpu_set_c(&gb->cpu); 
+            else 
+                cpu_clear_c(&gb->cpu);
+
+            gb->cpu.a = (uint8_t)result32;
+
+            gb->cpu.cycles += 8;
         break;
     case 0xC7: /* RST 00H */
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = 0x0000;
+        gb->cpu.cycles += 16;
         break;
     case 0xC8: /* RET Z */
+        if(cpu_get_z(&gb->cpu) == 1)
+        {
+            gb->cpu.pc = cpu_pop16(gb);
+            gb->cpu.cycles += 20;
+        }else
+        {
+            gb->cpu.cycles += 8;
+        }
         break;
     case 0xC9: /* RET */
+        gb->cpu.pc = cpu_pop16(gb);
+         gb->cpu.cycles += 16;
         break;
     case 0xCA: /* JP Z, a16 */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        if(cpu_get_z(&gb->cpu) == 1)
+        {
+            gb->cpu.pc = address;
+            gb->cpu.cycles += 16;
+        }else
+        {
+            gb->cpu.cycles += 12;
+        }
         break;
     case 0xCB: /* CB Prefix */
+        opcode = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
+        cpu_decode_and_execute_cp(gb, opcode);
         break; // Wichtig!
     case 0xCC: /* CALL Z, a16 */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        if(cpu_get_z(&gb->cpu) == 1)
+        {
+            cpu_push16(gb, gb->cpu.pc);
+            gb->cpu.pc = address;
+            gb->cpu.cycles += 24;
+        }else
+        {
+            gb->cpu.cycles += 12;
+        }
         break;
     case 0xCD: /* CALL a16 */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = address;
+        gb->cpu.cycles += 24;
         break;
     case 0xCE: /* ADC A, n8 */
+        result = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
+
+        carry = cpu_get_c(&gb->cpu);
+        result32 = gb->cpu.a + result + carry;
+
+        if ((uint8_t)result32 == 0) 
+            cpu_set_z(&gb->cpu); 
+        else 
+            cpu_clear_z(&gb->cpu);
+
+        cpu_clear_n(&gb->cpu);
+
+        if (((gb->cpu.a & 0x0F) + (result & 0x0F) + carry) > 0x0F) 
+            cpu_set_h(&gb->cpu); 
+        else 
+            cpu_clear_h(&gb->cpu);
+            
+        if (result32 > 0xFF) 
+            cpu_set_c(&gb->cpu); 
+        else 
+            cpu_clear_c(&gb->cpu);
+            
+        gb->cpu.a = (uint8_t)result32;
+        gb->cpu.cycles += 8;
         break;
     case 0xCF: /* RST 08H */
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = 0x0008;
+        gb->cpu.cycles += 16;
         break;
 
     case 0xD0: /* RET NC */
+        if(cpu_get_c(&gb->cpu) == 0)
+        {
+            gb->cpu.pc = cpu_pop16(gb);
+            gb->cpu.cycles += 20;
+        }else
+        {
+            gb->cpu.cycles += 8;
+        }
         break;
     case 0xD1: /* POP DE */
+        cpu_set_de(&gb->cpu, cpu_pop16(gb));
+        gb->cpu.cycles += 12;
         break;
     case 0xD2: /* JP NC, a16 */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        if(cpu_get_c(&gb->cpu) == 0)
+        {
+            gb->cpu.pc = address;
+            gb->cpu.cycles += 16;
+        }else
+        {
+            gb->cpu.cycles += 12;
+        }
         break;
     case 0xD4: /* CALL NC, a16 */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        if(cpu_get_c(&gb->cpu) == 0)
+        {
+            cpu_push16(gb, gb->cpu.pc);
+            gb->cpu.pc = address;
+            gb->cpu.cycles += 24;
+        }else
+        {
+            gb->cpu.cycles += 12;
+        }
         break;
     case 0xD5: /* PUSH DE */
+        cpu_push16(gb, cpu_get_de(&gb->cpu));
+        gb->cpu.cycles += 16;
         break;
     case 0xD6: /* SUB n8 */
+        result = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
+        result32 = gb->cpu.a - result;
+
+        if ((uint8_t)result32 == 0) 
+            cpu_set_z(&gb->cpu); 
+        else 
+            cpu_clear_z(&gb->cpu);
+        
+        cpu_set_n(&gb->cpu); // 1 bei Subtraktion
+            
+        if (((gb->cpu.a & 0x0F) - (result & 0x0F)) < 0) 
+            cpu_set_h(&gb->cpu); 
+        else 
+            cpu_clear_h(&gb->cpu);
+
+        if (result32 < 0) 
+            cpu_set_c(&gb->cpu); 
+        else 
+            cpu_clear_c(&gb->cpu);
+            
+        gb->cpu.a = (uint8_t)result32;
+        gb->cpu.cycles += 8;
         break;
     case 0xD7: /* RST 10H */
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = 0x0010;
+        gb->cpu.cycles += 16;
         break;
     case 0xD8: /* RET C */
+        if(cpu_get_c(&gb->cpu) == 1)
+        {
+            gb->cpu.pc = cpu_pop16(gb);
+            gb->cpu.cycles += 20;
+        }else
+        {
+            gb->cpu.cycles += 8;
+        }
         break;
     case 0xD9: /* RETI */
         break;
@@ -1133,4 +1295,9 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         break;
     
     }
+}
+
+void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode)
+{
+
 }
