@@ -25,8 +25,10 @@ typedef struct
 
     // Interne Zustände
     bool halted;
+    bool halt_bug;
     bool stopped;
     uint32_t cycles;
+    uint8_t ime;
 
 } CPU;
 
