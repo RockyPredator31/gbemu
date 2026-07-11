@@ -267,6 +267,7 @@ uint8_t cpu_fetch(GameBoy *gb)
 void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 {
     uint8_t result = 0;
+    uint8_t op_value = 0;
     int32_t result32 = 0; 
     uint8_t carry = 0;
     uint16_t address = 0;
@@ -1078,7 +1079,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         break;
     case 0xC9: /* RET */
         gb->cpu.pc = cpu_pop16(gb);
-         gb->cpu.cycles += 16;
+        gb->cpu.cycles += 16;
         break;
     case 0xCA: /* JP Z, a16 */
         address = memory_read16(gb, gb->cpu.pc);
@@ -1234,12 +1235,67 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         }
         break;
     case 0xD9: /* RETI */
+        gb->cpu.pc = cpu_pop16(gb);
+        // enable Interrupt Flag
+        gb->cpu.ime = 1;
+        gb->cpu.cycles += 16;
         break;
     case 0xDA: /* JP C, a16 */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        if(cpu_get_c(&gb->cpu) == 1)
+        {
+            gb->cpu.pc = address;
+            gb->cpu.cycles += 16;
+        }else
+        {
+            gb->cpu.cycles += 12;
+        }
         break;
     case 0xDC: /* CALL C, a16 */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        if(cpu_get_c(&gb->cpu) == 1)
+        {
+            cpu_push16(gb, gb->cpu.pc);
+            gb->cpu.pc = address;
+            gb->cpu.cycles += 24;
+        }else
+        {
+            gb->cpu.cycles += 12;
+        }
         break;
     case 0xDE: /* SBC A, n8 */
+        op_value = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+
+        carry = cpu_get_c(&gb->cpu);
+
+        result32 = ((int)gb->cpu.a - (int)op_value - (int)carry);
+
+        if(result32 < 0)
+        {
+            cpu_set_c(&gb->cpu);
+        }else
+        {
+            cpu_clear_c(&gb->cpu);
+        }
+
+        cpu_set_n(&gb->cpu);
+
+        result = (uint8_t)result32;
+
+        cpu_check_z(&gb->cpu, result);
+
+        if (((int)(gb->cpu.a & 0x0F) - (int)(op_value & 0x0F) - (int)carry) < 0) {
+            cpu_set_h(&gb->cpu);
+        } else {
+            cpu_clear_h(&gb->cpu);
+        }
+
+        gb->cpu.a = result;
+
+        gb->cpu.cycles += 8;
         break;
     case 0xDF: /* RST 18H */
         break;
