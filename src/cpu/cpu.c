@@ -268,6 +268,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 {
     uint8_t result = 0;
     uint8_t op_value = 0;
+    uint8_t u8Val = 0;
     int32_t result32 = 0; 
     uint8_t carry = 0;
     uint16_t address = 0;
@@ -1298,25 +1299,90 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 8;
         break;
     case 0xDF: /* RST 18H */
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = 0x0018;
+        gb->cpu.cycles += 16;
         break;
-
     case 0xE0: /* LDH (a8), A */
+        result = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+        address = 0xff00 | result;
+        memory_write(gb, address, gb->cpu.a);
+        gb->cpu.cycles += 12;
         break;
     case 0xE1: /* POP HL */
+        cpu_set_hl(&gb->cpu, cpu_pop16(gb));
+        gb->cpu.cycles += 12;
         break;
     case 0xE2: /* LD (C), A */
+        address = 0xff00 + gb->cpu.c;
+        memory_write(gb, address, gb->cpu.a);
+        gb->cpu.cycles += 8;
         break;
     case 0xE5: /* PUSH HL */
+        cpu_push16(gb, cpu_get_hl(&gb->cpu));
+        gb->cpu.cycles += 16;
         break;
     case 0xE6: /* AND n8 */
+        result =  memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+        result = (uint8_t)(gb->cpu.a & result);
+        gb->cpu.a = result;
+        if (result == 0)
+        {
+            cpu_set_z(&gb->cpu);
+        } else
+        {
+            cpu_clear_z(&gb->cpu);
+        }
+        cpu_clear_n(&gb->cpu);
+        cpu_set_h(&gb->cpu);
+        cpu_clear_c(&gb->cpu);
+        gb->cpu.cycles += 8;
         break;
     case 0xE7: /* RST 20H */
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = 0x0020;
+        gb->cpu.cycles += 16;
         break;
     case 0xE8: /* ADD SP, r8 */
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+
+        op_value = (uint8_t)(gb->cpu.sp & 0xFF);
+        u8Val = (uint8_t)offset;
+
+        //Half Carry
+        if (((op_value & 0x0F) + (u8Val & 0x0F)) > 0x0F) {
+            cpu_set_h(&gb->cpu);
+        } else {
+            cpu_clear_h(&gb->cpu);
+        }
+
+        //Carry
+        if (((int)op_value + (int)u8Val) > 0xFF) {
+            cpu_set_c(&gb->cpu);
+        } else {
+            cpu_clear_c(&gb->cpu);
+        }
+
+        cpu_clear_z(&gb->cpu);
+        cpu_clear_n(&gb->cpu);
+
+        gb->cpu.sp = (uint16_t)((int32_t)gb->cpu.sp + offset);
+
+        gb->cpu.cycles += 16;
         break;
-    case 0xE9: /* JP (HL) */
+    case 0xE9: /* JP HL */
+        address = cpu_get_hl(&gb->cpu);
+        gb->cpu.pc = address;
+        gb->cpu.cycles += 4;
         break;
     case 0xEA: /* LD (a16), A */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        memory_write(gb, address, gb->cpu.a);
+        gb->cpu.cycles += 16;
         break;
     case 0xEE: /* XOR n8 */
         break;
