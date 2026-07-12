@@ -1544,15 +1544,17 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 
 }
 
+// Prefix Op-Codes
 void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode)
 {
     uint8_t u8Val = 0;
+    uint8_t u8Result = 0;
     uint16_t u16Val = 0;
+    uint16_t address = 0;
 
-
-    switch(opcode) /* RLC B */
+    switch(opcode)
     {
-        case 0x00:
+        case 0x00: /* RLC B */
             u8Val = gb->cpu.b;
             gb->cpu.b = (uint8_t)(u8Val << 1U);
             
@@ -1566,6 +1568,402 @@ void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode)
             }
 
             if(gb->cpu.b == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x01: /* RLC C */
+            u8Val = gb->cpu.c;
+            gb->cpu.c = (uint8_t)(u8Val << 1U);
+            
+            if(u8Val > 0x7F)
+            {
+                gb->cpu.c++;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.c == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x02: /* RLC D */
+            u8Val = gb->cpu.d;
+            gb->cpu.d = (uint8_t)(u8Val << 1U);
+            
+            if(u8Val > 0x7F)
+            {
+                gb->cpu.d++;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.d == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x03: /* RLC E */
+            u8Val = gb->cpu.e;
+            gb->cpu.e = (uint8_t)(u8Val << 1U);
+            
+            if(u8Val > 0x7F)
+            {
+                gb->cpu.e++;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.e == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x04: /* RLC H */
+            u8Val = gb->cpu.h;
+            gb->cpu.h = (uint8_t)(u8Val << 1U);
+            
+            if(u8Val > 0x7F)
+            {
+                gb->cpu.h++;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.h == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x05: /* RLC L */
+            u8Val = gb->cpu.l;
+            gb->cpu.l = (uint8_t)(u8Val << 1U);
+            
+            if(u8Val > 0x7F)
+            {
+                gb->cpu.l++;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.l == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x06: /* RLC (HL) */
+            address = cpu_get_hl(&gb->cpu);
+            u8Val = memory_read(gb, address);
+            u8Result = (uint8_t)(u8Val << 1U);
+            
+            if(u8Val > 0x7F)
+            {
+                u8Result++;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            memory_write(gb, address, u8Result);
+
+            gb->cpu.cycles += 16;
+            break;
+        case 0x07: /* RLC A */
+            u8Val = gb->cpu.a;
+            gb->cpu.a = (uint8_t)(u8Val << 1U);
+            
+            if(u8Val > 0x7F)
+            {
+                gb->cpu.a++;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.a == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x08: /* RRC B */
+            u8Val = gb->cpu.b;
+            gb->cpu.b = (uint8_t)(u8Val >> 1U);
+            
+            if(u8Val & 0x01)
+            {
+                gb->cpu.b |= 0x80;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.b == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x09: /* RRC C */
+            u8Val = gb->cpu.c;
+            gb->cpu.c = (uint8_t)(u8Val >> 1U);
+            
+            if(u8Val & 0x01)
+            {
+                gb->cpu.c |= 0x80;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.c == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x0A: /* RRC D */
+            u8Val = gb->cpu.d;
+            gb->cpu.d = (uint8_t)(u8Val >> 1U);
+            
+            if(u8Val & 0x01)
+            {
+                gb->cpu.d |= 0x80;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.d == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x0B: /* RRC E */
+            u8Val = gb->cpu.e;
+            gb->cpu.e = (uint8_t)(u8Val >> 1U);
+            
+            if(u8Val & 0x01)
+            {
+                gb->cpu.e |= 0x80;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.e == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x0C: /* RRC H */
+            u8Val = gb->cpu.h;
+            gb->cpu.h = (uint8_t)(u8Val >> 1U);
+            
+            if(u8Val & 0x01)
+            {
+                gb->cpu.h |= 0x80;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.h == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x0D: /* RRC L */
+            u8Val = gb->cpu.l;
+            gb->cpu.l = (uint8_t)(u8Val >> 1U);
+            
+            if(u8Val & 0x01)
+            {
+                gb->cpu.l |= 0x80;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.l == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+        case 0x0E: /* RRC (HL) */
+            address = cpu_get_hl(&gb->cpu);
+            u8Val = memory_read(gb, address);
+            u8Result = (uint8_t)(u8Val >> 1U);
+            
+            if(u8Val & 0x01)
+            {
+                u8Result |= 0x80;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            memory_write(gb, address, u8Result);
+
+            gb->cpu.cycles += 16;
+            break;
+        case 0x0F: /* RRC A */
+            u8Val = gb->cpu.a;
+            gb->cpu.a = (uint8_t)(u8Val >> 1U);
+            
+            if(u8Val & 0x01)
+            {
+                gb->cpu.a |= 0x80;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.a == 0)
             {
                 cpu_set_z(&gb->cpu);
             }else
