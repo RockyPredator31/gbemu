@@ -22,6 +22,7 @@ void cpu_init(CPU *cpu, GB_Version gbv)
         cpu->stopped = false;
         cpu->cycles = 0;
         cpu->ime = 0;
+        cpu->ei_delay = 0;
         break;
 
     default:
@@ -56,7 +57,7 @@ uint16_t cpu_get_hl(const CPU* cpu) { return ( (cpu->h << 8) | cpu->l); }
 // ========= Set Registers ===========================
 void cpu_set_af(CPU* cpu, uint16_t value) { 
     cpu->a = value >> 8; 
-    cpu->f = value & 0xFF; 
+    cpu->f = value & 0xF0; 
 }
 
 void cpu_set_bc(CPU* cpu, uint16_t value) { 
@@ -269,6 +270,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
     uint8_t result = 0;
     uint8_t op_value = 0;
     uint8_t u8Val = 0;
+    uint16_t u16Val = 0;
     int32_t result32 = 0; 
     uint8_t carry = 0;
     uint16_t address = 0;
@@ -1098,7 +1100,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         opcode = memory_read(gb, gb->cpu.pc);
         gb->cpu.pc++;
         cpu_decode_and_execute_cp(gb, opcode);
-        break; // Wichtig!
+        break;
     case 0xCC: /* CALL Z, a16 */
         address = memory_read16(gb, gb->cpu.pc);
         gb->cpu.pc += 2;
@@ -1385,41 +1387,196 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 16;
         break;
     case 0xEE: /* XOR n8 */
+        result =  memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+        result = (uint8_t)(gb->cpu.a ^ result);
+        gb->cpu.a = result;
+        if (result == 0)
+        {
+            cpu_set_z(&gb->cpu);
+        } else
+        {
+            cpu_clear_z(&gb->cpu);
+        }
+        cpu_clear_n(&gb->cpu);
+        cpu_clear_h(&gb->cpu);
+        cpu_clear_c(&gb->cpu);
+        gb->cpu.cycles += 8;
         break;
     case 0xEF: /* RST 28H */
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = 0x0028;
+        gb->cpu.cycles += 16;
         break;
-
     case 0xF0: /* LDH A, (a8) */
+        result = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+        address = 0xff00 | result;
+        gb->cpu.a = memory_read(gb, address);
+        gb->cpu.cycles += 12;
         break;
     case 0xF1: /* POP AF */
+        cpu_set_af(&gb->cpu, cpu_pop16(gb));
+        gb->cpu.cycles += 12;
         break;
     case 0xF2: /* LD A, (C) */
+        address = 0xff00 + gb->cpu.c;
+        gb->cpu.a = memory_read(gb, address);
+        gb->cpu.cycles += 8;
         break;
     case 0xF3: /* DI */
+        gb->cpu.ime = 0;
+        gb->cpu.cycles += 4;
         break;
     case 0xF5: /* PUSH AF */
+        cpu_push16(gb, cpu_get_af(&gb->cpu));
+        gb->cpu.cycles += 16;
         break;
     case 0xF6: /* OR n8 */
+        result =  memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+        result = (uint8_t)(gb->cpu.a | result);
+        gb->cpu.a = result;
+        if (result == 0)
+        {
+            cpu_set_z(&gb->cpu);
+        } else
+        {
+            cpu_clear_z(&gb->cpu);
+        }
+        cpu_clear_n(&gb->cpu);
+        cpu_clear_h(&gb->cpu);
+        cpu_clear_c(&gb->cpu);
+        gb->cpu.cycles += 8;
         break;
     case 0xF7: /* RST 30H */
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = 0x0030;
+        gb->cpu.cycles += 16;
         break;
     case 0xF8: /* LD HL, SP+r8 */
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+        u16Val = (uint16_t)(gb->cpu.sp + offset);
+        cpu_set_hl(&gb->cpu, u16Val);
+
+        //Half Carry
+        if ((((uint8_t)offset & 0x0F) + ((uint8_t)gb->cpu.sp & 0x0F)) > 0x0F) {
+            cpu_set_h(&gb->cpu);
+        } else {
+            cpu_clear_h(&gb->cpu);
+        }
+
+        //Carry
+        if (((uint8_t)offset + (uint8_t)gb->cpu.sp) > 0xFF) {
+            cpu_set_c(&gb->cpu);
+        } else {
+            cpu_clear_c(&gb->cpu);
+        }
+
+        cpu_clear_z(&gb->cpu);
+        cpu_clear_n(&gb->cpu);
+
+        gb->cpu.cycles += 12;
         break;
     case 0xF9: /* LD SP, HL */
+        gb->cpu.sp = cpu_get_hl(&gb->cpu);
+        gb->cpu.cycles += 8;
         break;
     case 0xFA: /* LD A, (a16) */
+        address = memory_read16(gb, gb->cpu.pc);
+        gb->cpu.pc += 2;
+        gb->cpu.a = memory_read(gb, address);
+        gb->cpu.cycles += 16;
         break;
     case 0xFB: /* EI */
+        // Interupt Enables after the following instruction.
+        gb->cpu.ei_delay = 2;
+        gb->cpu.cycles += 4;
         break;
     case 0xFE: /* CP n8 */
+        op_value = memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc += 1;
+        result = gb->cpu.a - op_value;
+
+        if (result == 0)
+        {
+            cpu_set_z(&gb->cpu);
+        }else
+        {
+            cpu_clear_z(&gb->cpu);
+        }
+        
+        cpu_set_n(&gb->cpu);
+
+        if ((gb->cpu.a & 0x0F) < (op_value & 0x0F)) {
+            cpu_set_h(&gb->cpu);
+        } else {
+            cpu_clear_h(&gb->cpu);
+        }
+        
+        if(op_value > gb->cpu.a)
+        {
+            cpu_set_c(&gb->cpu);
+        }else
+        {
+            cpu_clear_c(&gb->cpu);
+        }
+        gb->cpu.cycles += 8;
         break;
     case 0xFF: /* RST 38H */
+        cpu_push16(gb, gb->cpu.pc);
+        gb->cpu.pc = 0x0038;
+        gb->cpu.cycles += 16;
         break;
     
     }
+    
+    // delay for EI
+    if(gb->cpu.ei_delay > 0)
+    {
+        if(gb->cpu.ei_delay == 1)
+        {
+            gb->cpu.ime = 1;
+        }
+        gb->cpu.ei_delay--;
+    }
+
 }
 
 void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode)
 {
+    uint8_t u8Val = 0;
+    uint16_t u16Val = 0;
 
+
+    switch(opcode) /* RLC B */
+    {
+        case 0x00:
+            u8Val = gb->cpu.b;
+            gb->cpu.b = (uint8_t)(u8Val << 1U);
+            
+            if(u8Val > 0x7F)
+            {
+                gb->cpu.b++;
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            if(gb->cpu.b == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_n(&gb->cpu);
+            cpu_clear_h(&gb->cpu);
+
+            gb->cpu.cycles += 8;
+            break;
+    }
 }

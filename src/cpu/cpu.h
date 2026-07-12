@@ -29,6 +29,7 @@ typedef struct
     bool stopped;
     uint32_t cycles;
     uint8_t ime;
+    uint8_t ei_delay;
 
 } CPU;
 
