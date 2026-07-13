@@ -2202,5 +2202,449 @@ void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode)
             gb->cpu.a = u8Result;
             gb->cpu.cycles += 8;
             break;
+        case 0x18: /* RR B */
+            u8Val = cpu_get_c(&gb->cpu);
+            u8Result = gb->cpu.b;
+
+            if(u8Result & 0x01)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = ((u8Result >> 1U) | (u8Val << 7U));
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x19: /* RR C */
+            u8Val = cpu_get_c(&gb->cpu);
+            u8Result = gb->cpu.c;
+
+            if(u8Result & 0x01)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = ((u8Result >> 1U) | (u8Val << 7U));
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x1A: /* RR D */
+            u8Val = cpu_get_c(&gb->cpu);
+            u8Result = gb->cpu.d;
+
+            if(u8Result & 0x01)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = ((u8Result >> 1U) | (u8Val << 7U));
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x1B: /* RR E */
+            u8Val = cpu_get_c(&gb->cpu);
+            u8Result = gb->cpu.e;
+
+            if(u8Result & 0x01)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = ((u8Result >> 1U) | (u8Val << 7U));
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x1C: /* RR H */
+            u8Val = cpu_get_c(&gb->cpu);
+            u8Result = gb->cpu.h;
+
+            if(u8Result & 0x01)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = ((u8Result >> 1U) | (u8Val << 7U));
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x1D: /* RR L */
+            u8Val = cpu_get_c(&gb->cpu);
+            u8Result = gb->cpu.l;
+
+            if(u8Result & 0x01)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = ((u8Result >> 1U) | (u8Val << 7U ));
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x1E: /* RR (HL) */
+            address = cpu_get_hl(&gb->cpu);
+            u8Val = cpu_get_c(&gb->cpu);
+            
+            u8Result = memory_read(gb, address);
+
+            if(u8Result & 0x01)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = ((u8Result >> 1U) | (u8Val << 7U));
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0x1F: /* RR A */
+            u8Val = cpu_get_c(&gb->cpu);
+            u8Result = gb->cpu.a;
+
+            if(u8Result & 0x01)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = ((u8Result >> 1U) | (u8Val << 7U));
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x20: /* SLA B */
+            u8Result = gb->cpu.b;
+
+            if(u8Result & 0x80)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = (u8Result << 1U);
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x21: /* SLA C */
+            u8Result = gb->cpu.c;
+
+            if(u8Result & 0x80)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = (u8Result << 1U);
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x22: /* SLA D */
+            u8Result = gb->cpu.d;
+
+            if(u8Result & 0x80)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = (u8Result << 1U);
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x23: /* SLA E */
+            u8Result = gb->cpu.e;
+
+            if(u8Result & 0x80)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = (u8Result << 1U);
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x24: /* SLA H */
+            u8Result = gb->cpu.h;
+
+            if(u8Result & 0x80)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = (u8Result << 1U);
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x25: /* SLA L */
+            u8Result = gb->cpu.l;
+
+            if(u8Result & 0x80)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = (u8Result << 1U);
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x26: /* SLA (HL) */
+            address = cpu_get_hl(&gb->cpu);
+            
+            u8Result = memory_read(gb, address);
+
+            if(u8Result & 0x80)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = (u8Result << 1U);
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0x27: /* SLA A */
+            u8Result = gb->cpu.a;
+
+            if(u8Result & 0x80)
+            {
+                cpu_set_c(&gb->cpu);
+            }else
+            {
+                cpu_clear_c(&gb->cpu);
+            }
+
+            u8Result = (u8Result << 1U);
+
+            if(u8Result == 0)
+            {
+                cpu_set_z(&gb->cpu);
+            }else
+            {
+                cpu_clear_z(&gb->cpu);
+            }
+
+            cpu_clear_h(&gb->cpu);
+            cpu_clear_n(&gb->cpu);
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
     }
 }
