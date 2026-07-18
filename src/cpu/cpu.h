@@ -38,6 +38,7 @@ void cpu_init(CPU* cpu, GB_Version gbv);
 
 uint8_t cpu_fetch(GameBoy* gb);
 void cpu_decode_and_execute(GameBoy* gb, uint8_t opcode);
+void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode);
 void cpu_step(GameBoy* gb);
 
 // ====== Flag SET =======
