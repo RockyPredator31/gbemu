@@ -4140,5 +4140,1045 @@ void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode)
 
             gb->cpu.cycles += 8;
             break;
+        case 0x80: /* RES 0 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result & ~(1U << 0U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x81: /* RES 0 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result & ~(1U << 0U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x82: /* RES 0 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result & ~(1U << 0U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x83: /* RES 0 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result & ~(1U << 0U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x84: /* RES 0 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result & ~(1U << 0U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x85: /* RES 0 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result & ~(1U << 0U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x86: /* RES 0 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result & ~(1U << 0U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0x87: /* RES 0 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result & ~(1U << 0U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x88: /* RES 1 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result & ~(1U << 1U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x89: /* RES 1 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result & ~(1U << 1U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x8A: /* RES 1 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result & ~(1U << 1U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x8B: /* RES 1 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result & ~(1U << 1U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x8C: /* RES 1 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result & ~(1U << 1U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x8D: /* RES 1 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result & ~(1U << 1U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x8E: /* RES 1 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result & ~(1U << 1U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0x8F: /* RES 1 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result & ~(1U << 1U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x90: /* RES 2 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result & ~(1U << 2U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x91: /* RES 2 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result & ~(1U << 2U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x92: /* RES 2 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result & ~(1U << 2U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x93: /* RES 2 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result & ~(1U << 2U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x94: /* RES 2 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result & ~(1U << 2U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x95: /* RES 2 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result & ~(1U << 2U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x96: /* RES 2 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result & ~(1U << 2U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0x97: /* RES 2 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result & ~(1U << 2U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x98: /* RES 3 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result & ~(1U << 3U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x99: /* RES 3 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result & ~(1U << 3U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x9A: /* RES 3 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result & ~(1U << 3U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x9B: /* RES 3 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result & ~(1U << 3U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x9C: /* RES 3 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result & ~(1U << 3U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x9D: /* RES 3 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result & ~(1U << 3U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0x9E: /* RES 3 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result & ~(1U << 3U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0x9F: /* RES 3 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result & ~(1U << 3U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA0: /* RES 4 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result & ~(1U << 4U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA1: /* RES 4 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result & ~(1U << 4U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA2: /* RES 4 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result & ~(1U << 4U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA3: /* RES 4 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result & ~(1U << 4U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA4: /* RES 4 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result & ~(1U << 4U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA5: /* RES 4 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result & ~(1U << 4U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA6: /* RES 4 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result & ~(1U << 4U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xA7: /* RES 4 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result & ~(1U << 4U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA8: /* RES 5 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result & ~(1U << 5U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xA9: /* RES 5 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result & ~(1U << 5U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xAA: /* RES 5 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result & ~(1U << 5U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xAB: /* RES 5 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result & ~(1U << 5U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xAC: /* RES 5 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result & ~(1U << 5U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xAD: /* RES 5 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result & ~(1U << 5U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xAE: /* RES 5 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result & ~(1U << 5U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xAF: /* RES 5 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result & ~(1U << 5U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB0: /* RES 6 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result & ~(1U << 6U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB1: /* RES 6 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result & ~(1U << 6U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB2: /* RES 6 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result & ~(1U << 6U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB3: /* RES 6 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result & ~(1U << 6U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB4: /* RES 6 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result & ~(1U << 6U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB5: /* RES 6 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result & ~(1U << 6U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB6: /* RES 6 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result & ~(1U << 6U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xB7: /* RES 6 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result & ~(1U << 6U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB8: /* RES 7 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result & ~(1U << 7U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xB9: /* RES 7 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result & ~(1U << 7U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xBA: /* RES 7 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result & ~(1U << 7U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xBB: /* RES 7 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result & ~(1U << 7U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xBC: /* RES 7 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result & ~(1U << 7U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xBD: /* RES 7 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result & ~(1U << 7U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xBE: /* RES 7 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result & ~(1U << 7U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xBF: /* RES 7 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result & ~(1U << 7U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC0: /* SET 0 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result | (1U << 0U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC1: /* SET 0 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result | (1U << 0U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC2: /* SET 0 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result | (1U << 0U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC3: /* SET 0 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result | (1U << 0U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC4: /* SET 0 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result | (1U << 0U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC5: /* SET 0 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result | (1U << 0U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC6: /* SET 0 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result | (1U << 0U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xC7: /* SET 0 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result | (1U << 0U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC8: /* SET 1 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result | (1U << 1U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xC9: /* SET 1 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result | (1U << 1U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xCA: /* SET 1 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result | (1U << 1U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xCB: /* SET 1 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result | (1U << 1U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xCC: /* SET 1 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result | (1U << 1U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xCD: /* SET 1 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result | (1U << 1U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xCE: /* SET 1 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result | (1U << 1U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xCF: /* SET 1 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result | (1U << 1U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD0: /* SET 2 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result | (1U << 2U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD1: /* SET 2 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result | (1U << 2U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD2: /* SET 2 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result | (1U << 2U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD3: /* SET 2 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result | (1U << 2U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD4: /* SET 2 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result | (1U << 2U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD5: /* SET 2 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result | (1U << 2U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD6: /* SET 2 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result | (1U << 2U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xD7: /* SET 2 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result | (1U << 2U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD8: /* SET 3 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result | (1U << 3U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xD9: /* SET 3 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result | (1U << 3U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xDA: /* SET 3 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result | (1U << 3U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xDB: /* SET 3 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result | (1U << 3U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xDC: /* SET 3 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result | (1U << 3U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xDD: /* SET 3 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result | (1U << 3U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xDE: /* SET 3 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result | (1U << 3U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xDF: /* SET 3 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result | (1U << 3U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE0: /* SET 4 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result | (1U << 4U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE1: /* SET 4 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result | (1U << 4U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE2: /* SET 4 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result | (1U << 4U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE3: /* SET 4 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result | (1U << 4U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE4: /* SET 4 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result | (1U << 4U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE5: /* SET 4 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result | (1U << 4U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE6: /* SET 4 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result | (1U << 4U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xE7: /* SET 4 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result | (1U << 4U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE8: /* SET 5 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result | (1U << 5U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xE9: /* SET 5 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result | (1U << 5U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xEA: /* SET 5 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result | (1U << 5U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xEB: /* SET 5 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result | (1U << 5U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xEC: /* SET 5 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result | (1U << 5U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xED: /* SET 5 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result | (1U << 5U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xEE: /* SET 5 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result | (1U << 5U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xEF: /* SET 5 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result | (1U << 5U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF0: /* SET 6 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result | (1U << 6U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF1: /* SET 6 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result | (1U << 6U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF2: /* SET 6 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result | (1U << 6U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF3: /* SET 6 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result | (1U << 6U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF4: /* SET 6 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result | (1U << 6U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF5: /* SET 6 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result | (1U << 6U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF6: /* SET 6 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result | (1U << 6U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xF7: /* SET 6 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result | (1U << 6U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF8: /* SET 7 B*/
+            u8Result = gb->cpu.b;
+            
+            u8Result = (u8Result | (1U << 7U));
+
+            gb->cpu.b = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xF9: /* SET 7 C*/
+            u8Result = gb->cpu.c;
+            
+            u8Result = (u8Result | (1U << 7U));
+
+            gb->cpu.c = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xFA: /* SET 7 D*/
+            u8Result = gb->cpu.d;
+            
+            u8Result = (u8Result | (1U << 7U));
+
+            gb->cpu.d = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xFB: /* SET 7 E*/
+            u8Result = gb->cpu.e;
+            
+            u8Result = (u8Result | (1U << 7U));
+
+            gb->cpu.e = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xFC: /* SET 7 H*/
+            u8Result = gb->cpu.h;
+            
+            u8Result = (u8Result | (1U << 7U));
+
+            gb->cpu.h = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xFD: /* SET 7 L*/
+            u8Result = gb->cpu.l;
+            
+            u8Result = (u8Result | (1U << 7U));
+
+            gb->cpu.l = u8Result;
+            gb->cpu.cycles += 8;
+            break;
+        case 0xFE: /* SET 7 (HL)*/
+            address = cpu_get_hl(&gb->cpu);
+            u8Result = memory_read(gb, address);
+            
+            u8Result = (u8Result | (1U << 7U));
+
+            memory_write(gb, address, u8Result);
+            gb->cpu.cycles += 16;
+            break;
+        case 0xFF: /* SET 7 A*/
+            u8Result = gb->cpu.a;
+            
+            u8Result = (u8Result | (1U << 7U));
+
+            gb->cpu.a = u8Result;
+            gb->cpu.cycles += 8;
+            break;
     }
 }
