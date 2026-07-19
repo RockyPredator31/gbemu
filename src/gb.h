@@ -33,12 +33,5 @@ typedef struct GameBoy
 
 void gb_init(GameBoy* gb, uint8_t* rom, size_t rom_size);
 
-uint8_t memory_read(GameBoy* gb, uint16_t addr);
-
-uint16_t memory_read16(GameBoy* gb, uint16_t addr);
-
-void memory_write(GameBoy* gb, uint16_t addr, uint8_t value);
-
-void memory_write16(GameBoy* gb, uint16_t addr, uint16_t value);
 
 #endif
