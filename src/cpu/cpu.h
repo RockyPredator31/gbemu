@@ -70,6 +70,8 @@ void cpu_set_bc(CPU* cpu, uint16_t value);
 void cpu_set_de(CPU* cpu, uint16_t value);
 void cpu_set_hl(CPU* cpu, uint16_t value);
 
-
+// ========= PUSH/POP ===============================
+void cpu_push16(GameBoy* gb, uint16_t value);
+uint16_t cpu_pop16(GameBoy* gb);
 
 #endif

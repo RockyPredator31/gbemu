@@ -181,7 +181,8 @@ static inline void cpu_dec_r8(GameBoy* gb, uint8_t reg)
     gb->cpu.cycles += 4;
 }
 
-void cpu_push16(GameBoy* gb, uint16_t value) {
+void cpu_push16(GameBoy* gb, uint16_t value) 
+{
     // High Byte
     gb->cpu.sp--;
     memory_write(gb, gb->cpu.sp, (value >> 8) & 0xFF);
@@ -230,24 +231,21 @@ void cpu_set_reg_by_index(GameBoy* gb, uint8_t index, uint8_t value) {
 // ========= step ========
 void cpu_step(GameBoy *gb)
 {
-    // CPU schläft wenn halted != 0
+    uint32_t cycles_before = gb->cpu.cycles;
+
+    interrupt_handler(gb);
+
+    // CPU sleeps on halted
     if (gb->cpu.halted) {
         gb->cpu.cycles += 4;
-        return;
-    }
-
-    uint8_t opcode = cpu_fetch(gb);
-    cpu_decode_and_execute(gb, opcode);
-    
-    if (gb->cpu.cycles >= 70224)        // 70224 Zyklen = 1 Frame (DMG)
+    }else
     {
-        // Hier kommt später:
-        // - Bild rendern (PPU)
-        // - Sound updaten
-        // - Input updaten
-
-        gb->cpu.cycles -= 70224;        // WICHTIG: subtrahieren, nicht auf 0 setzen!
+        uint8_t opcode = cpu_fetch(gb);
+        cpu_decode_and_execute(gb, opcode);
     }
+
+    timer_update(gb, (gb->cpu.cycles - cycles_before));
+
 }
 
 // ======== fetch =========
@@ -406,9 +404,9 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 4;
         break;
     case 0x18: /* JR r8 */
-        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
-        gb->cpu.pc++;                                        // PC auf nächsten Opcode
-        gb->cpu.pc += offset;                                   // Relativer Sprung
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);  
+        gb->cpu.pc++;
+        gb->cpu.pc += offset;
         gb->cpu.cycles += 12;
         break;
     case 0x19: /* ADD HL, DE */
@@ -450,8 +448,8 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 
     /* ==================== 0x20 - 0x3F ==================== */
     case 0x20: /* JR NZ, r8 */
-        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
-        gb->cpu.pc++;                                        // PC auf nächsten Opcode
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);   
+        gb->cpu.pc++;
 
         if (cpu_get_z(&gb->cpu) == 0){
             gb->cpu.pc += offset;
@@ -514,8 +512,8 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 4;
         break;
     case 0x28: /* JR Z, r8 */
-        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
-        gb->cpu.pc++;                                        // PC auf nächsten Opcode
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
         if (cpu_get_z(&gb->cpu) == 1){
             gb->cpu.pc += offset;
             gb->cpu.cycles += 12;
@@ -553,8 +551,8 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 4;
         break;
     case 0x30: /* JR NC, r8 */
-        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
-        gb->cpu.pc++;                                        // PC auf nächsten Opcode
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
 
         if (cpu_get_c(&gb->cpu) == 0){
             gb->cpu.pc += offset;
@@ -611,8 +609,8 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
         gb->cpu.cycles += 4;
         break;
     case 0x38: /* JR C, r8 */
-        offset = (int8_t)memory_read(gb, gb->cpu.pc);    // signed 8-Bit Wert
-        gb->cpu.pc++;                                        // PC auf nächsten Opcode
+        offset = (int8_t)memory_read(gb, gb->cpu.pc);
+        gb->cpu.pc++;
         if (cpu_get_c(&gb->cpu) == 1){
             gb->cpu.pc += offset;
             gb->cpu.cycles += 12;
@@ -743,24 +741,24 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
     // IE  = Interrupt Enable Register (0xFFFF im Speicher)
     // IF  = Interrupt Flag Register   (0xFF0F im Speicher)
     
-    uint8_t ie = memory_read(gb, 0xFFFF);
-    uint8_t if_flag = memory_read(gb, 0xFF0F);
+        uint8_t ie = memory_read(gb, 0xFFFF);
+        uint8_t if_flag = memory_read(gb, 0xFF0F);
 
-    if (gb->cpu.ime == 1) {
-        // --- Normales Verhalten ---
-        // CPU schläft, bis ein Interrupt kommt
-        gb->cpu.halted = true;
-    } else {
-        // --- IME ist 0 (Interrupts global aus) ---
-        if ((if_flag & ie & 0x1F) != 0) {
-            // HALT bug triggered
-            gb->cpu.halt_bug = true;
-        } else {
+        if (gb->cpu.ime == 1) {
+            // --- Normales Verhalten ---
+            // CPU schläft, bis ein Interrupt kommt
             gb->cpu.halted = true;
+        } else {
+            // --- IME ist 0 (Interrupts global aus) ---
+            if ((if_flag & ie & 0x1F) != 0) {
+                // HALT bug triggered
+                gb->cpu.halt_bug = true;
+            } else {
+                gb->cpu.halted = true;
+            }
         }
-    }
 
-    gb->cpu.cycles += 4;
+        gb->cpu.cycles += 4;
         break;
 
     /* ==================== 0x80 - 0xBF : Arithmetic ==================== */
@@ -1544,7 +1542,7 @@ void cpu_decode_and_execute(GameBoy *gb, uint8_t opcode)
 
 }
 
-// Prefix Op-Codes
+// ========= Prefix Op-Codes (decode and execute) ==========
 void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode)
 {
     uint8_t u8Val = 0;
@@ -5182,3 +5180,5 @@ void cpu_decode_and_execute_cp(GameBoy* gb, uint8_t opcode)
             break;
     }
 }
+
+

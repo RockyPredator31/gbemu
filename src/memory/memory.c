@@ -211,6 +211,11 @@ void memory_write(GameBoy* gb, uint16_t addr, uint8_t value)
     // ================== IO ===============
     if(addr >= 0xFF00 && addr <= 0xFF7F)
     {
+        if (addr == 0xFF04) {
+            gb->timer.div_counter = 0;
+            gb->memory.io[0x04] = 0;
+            return;
+        }
         gb->memory.io[addr - 0xFF00] = value;
         return;
     }

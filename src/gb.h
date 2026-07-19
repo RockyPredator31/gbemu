@@ -4,6 +4,7 @@
 #include "cartridge/cartridge.h"
 #include "memory/memory.h"
 #include "cpu/cpu.h"
+#include "timer/timer.h"
 
 //SCREEN
 #define SCREEN_WIDTH 160
@@ -24,6 +25,7 @@ typedef struct GameBoy
     Cartridge cartridge;
     Memory memory;
     CPU cpu;
+    Timer timer;
     uint8_t InterruptEnableRegister;
 
 
