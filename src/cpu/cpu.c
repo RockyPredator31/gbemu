@@ -1,30 +1,28 @@
 #include "cpu.h"
 #include "../gb.h"
-#include "../interrupts/interrupts.h"
-#include "../timer/timer.h"
 
-void cpu_init(CPU *cpu, GB_Version gbv)
+void cpu_init(GameBoy* gb)
 {
-    switch (gbv)
+    switch (gb->gbVersion)
     {
     case DMG:
-        cpu->a = 0x01;
-        cpu->f = 0xB0; // z=1 | n=0 | h=1 | c=1
-        cpu->b = 0x00;
-        cpu->c = 0x13;
-        cpu->d = 0x00;
-        cpu->e = 0xD8;
-        cpu->h = 0x01;
-        cpu->l = 0x4D;
-        cpu->pc = 0x0100;
-        cpu->sp = 0xFFFE;
+        gb->cpu.a = 0x01;
+        gb->cpu.f = 0xB0; // z=1 | n=0 | h=1 | c=1
+        gb->cpu.b = 0x00;
+        gb->cpu.c = 0x13;
+        gb->cpu.d = 0x00;
+        gb->cpu.e = 0xD8;
+        gb->cpu.h = 0x01;
+        gb->cpu.l = 0x4D;
+        gb->cpu.pc = 0x0100;
+        gb->cpu.sp = 0xFFFE;
 
-        cpu->halted = false;
-        cpu->halt_bug = false;
-        cpu->stopped = false;
-        cpu->cycles = 0;
-        cpu->ime = 0;
-        cpu->ei_delay = 0;
+        gb->cpu.halted = false;
+        gb->cpu.halt_bug = false;
+        gb->cpu.stopped = false;
+        gb->cpu.cycles = 0;
+        gb->cpu.ime = 0;
+        gb->cpu.ei_delay = 0;
         break;
 
     default:

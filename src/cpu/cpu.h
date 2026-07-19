@@ -6,11 +6,6 @@
 
 typedef struct GameBoy GameBoy;
 
-typedef enum
-{
-    DMG = 0,
-    CGB
-} GB_Version;
 
 typedef struct
 {
@@ -34,7 +29,7 @@ typedef struct
 } CPU;
 
 
-void cpu_init(CPU* cpu, GB_Version gbv);
+void cpu_init(GameBoy* gb);
 
 uint8_t cpu_fetch(GameBoy* gb);
 void cpu_decode_and_execute(GameBoy* gb, uint8_t opcode);

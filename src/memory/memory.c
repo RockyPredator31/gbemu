@@ -48,6 +48,7 @@ void memory_init(Memory* memory)
     memory->io[0x41] = 0x81;        // STAT
     memory->io[0x42] = 0x00;        // SCY
     memory->io[0x43] = 0x00;        // SCX
+    memory->io[0x44] = 0x00;        // LY
     memory->io[0x45] = 0x00;        // LYC
     memory->io[0x47] = 0xFC;        // BGP  (Background Palette)
     memory->io[0x48] = 0xFF;        // OBP0 (Sprite Palette 0)
@@ -216,6 +217,11 @@ void memory_write(GameBoy* gb, uint16_t addr, uint8_t value)
         if (addr == 0xFF04) {
             gb->timer.div_counter = 0;
             gb->memory.io[0x04] = 0;
+            return;
+        }
+        if(addr == 0xFF44)
+        {
+            gb->memory.io[0x44] = 0;
             return;
         }
         gb->memory.io[addr - 0xFF00] = value;

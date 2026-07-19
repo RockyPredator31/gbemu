@@ -6,6 +6,7 @@
 #include "cpu/cpu.h"
 #include "timer/timer.h"
 #include "interrupts/interrupts.h"
+#include "ppu/ppu.h"
 
 //SCREEN
 #define SCREEN_WIDTH 160
@@ -19,6 +20,12 @@
 #define HRAM_START 0xFF80
 #define IE 0xFFFF                 //Interrupt enabled
 
+typedef enum
+{
+    DMG = 0,
+    CGB
+} GB_Version;
+
 typedef struct GameBoy GameBoy;
 
 typedef struct GameBoy
@@ -26,9 +33,10 @@ typedef struct GameBoy
     Cartridge cartridge;
     Memory memory;
     CPU cpu;
+    PPU ppu;
     Timer timer;
     uint8_t InterruptEnableRegister;
-
+    GB_Version gbVersion;
 
 
 } GameBoy;
