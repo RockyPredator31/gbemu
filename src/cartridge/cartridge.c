@@ -120,7 +120,7 @@ void mbc0_write(Cartridge* cart, uint16_t addr, uint8_t value)
 
 void mbc1_write(Cartridge* cart, uint16_t addr, uint8_t value)
 {
-     if (addr <= 0x1FFF)           // RAM Enable
+    if (addr <= 0x1FFF)           // RAM Enable
     {
         cart->ram_enabled = ((value & 0x0F) == 0x0A);
     }

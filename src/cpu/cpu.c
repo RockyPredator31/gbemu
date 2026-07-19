@@ -1,5 +1,7 @@
 #include "cpu.h"
 #include "../gb.h"
+#include "../interrupts/interrupts.h"
+#include "../timer/timer.h"
 
 void cpu_init(CPU *cpu, GB_Version gbv)
 {

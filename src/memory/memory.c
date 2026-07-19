@@ -95,7 +95,9 @@ uint8_t memory_read(GameBoy* gb, uint16_t addr)
             }
 
             if (offset < gb->cartridge.eram_size)
+            {
                 return gb->cartridge.eram[offset];
+            }
         }
         return 0xFF;
     }

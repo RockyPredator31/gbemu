@@ -5,6 +5,7 @@
 #include "memory/memory.h"
 #include "cpu/cpu.h"
 #include "timer/timer.h"
+#include "interrupts/interrupts.h"
 
 //SCREEN
 #define SCREEN_WIDTH 160
